@@ -151,7 +151,5 @@ build/
 .firebase/hosting.*
 
 # remove this after whole project is done
-package-lock.json
-
 # temp file of PPT
 docs/architecture/~$relationship.pptx

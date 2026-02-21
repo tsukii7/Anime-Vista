@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import styles from './Comments.module.css';
 import CommentCard from './CommentCard';
-import {addComment} from "../../../firebase/db.js";
-import {getCurrentUser} from "../../../firebase/auth.js";
+import { addComment } from "../../../firebase/db.js";
+import { getCurrentUser } from "../../../firebase/auth.js";
 
 const Comments = ({ animeId, comments }) => {
     const { userInfo, comments: commentList } = comments;
@@ -36,16 +36,17 @@ const Comments = ({ animeId, comments }) => {
             rootMargin: '0px 0px 100px 0px',
         });
 
+        const currentRef = bottomRef.current;
         const timeoutId = setTimeout(() => {
-            if (bottomRef.current) {
-                observer.observe(bottomRef.current);
+            if (currentRef) {
+                observer.observe(currentRef);
             }
         }, 100); // 延迟绑定，确保 DOM 出现
 
         return () => {
             clearTimeout(timeoutId);
-            if (bottomRef.current) {
-                observer.unobserve(bottomRef.current);
+            if (currentRef) {
+                observer.unobserve(currentRef);
             }
         };
     }, [observerCallback, commentList.length]);
@@ -57,15 +58,15 @@ const Comments = ({ animeId, comments }) => {
             <hr className={styles.divider} />
 
             <div className={styles.inputBox}>
-        <textarea
-            disabled={!userInfo.isLogin}
-            placeholder={
-                userInfo.isLogin ? 'Write a comment...' : 'Please login to comment'
-            }
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            className={styles.textarea}
-        />
+                <textarea
+                    disabled={!userInfo.isLogin}
+                    placeholder={
+                        userInfo.isLogin ? 'Write a comment...' : 'Please login to comment'
+                    }
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    className={styles.textarea}
+                />
                 <button
                     className={styles.sendBtn}
                     disabled={!userInfo.isLogin || !input.trim()}

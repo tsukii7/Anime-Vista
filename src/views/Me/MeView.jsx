@@ -5,18 +5,18 @@ import MeActivityView from './MeActivityView';
 import EditProfileDialog from './components/EditProfileDialog';
 import defaultAvatar from '../../assets/default-avatar.png'
 import background from '../../assets/background.png';
-import {hashUidToNumber} from "../../firebase/db.js";
+import { hashUidToNumber } from "../../firebase/db.js";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import EditIcon from '@mui/icons-material/Edit';
-import {getCurrentUser} from "../../firebase/auth.js";
+import { getCurrentUser } from "../../firebase/auth.js";
 
 const MeView = ({ userInfo, activeTab = 'favorites', onTabChange }) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
   const handleTabChange = (tab) => {
-      onTabChange(tab);
+    onTabChange(tab);
   };
 
   const handleEditClick = () => {
@@ -42,10 +42,10 @@ const MeView = ({ userInfo, activeTab = 'favorites', onTabChange }) => {
       />
 
       {/* 编辑按钮 */}
-      {userInfo.userId === getCurrentUser().userId &&
+      {userInfo.userId === getCurrentUser()?.userId &&
         <div className={styles.editButtonContainer} onClick={handleEditClick}>
           <div className={styles.editIconContainer}>
-            <EditIcon  fontSize="small"/>
+            <EditIcon fontSize="small" />
           </div>
           <div style={{ width: 36, textAlign: 'center' }}>
             <span className={styles.editText}>Edit</span>
@@ -58,7 +58,7 @@ const MeView = ({ userInfo, activeTab = 'favorites', onTabChange }) => {
       <div className={styles.userProfileSection}>
         <img
           className={styles.userAvatar}
-          src={userInfo.avatar? userInfo.avatar : defaultAvatar}
+          src={userInfo.avatar ? userInfo.avatar : defaultAvatar}
           alt="user profile"
         />
         <div className={styles.userInfoText}>
@@ -92,10 +92,10 @@ const MeView = ({ userInfo, activeTab = 'favorites', onTabChange }) => {
         <div className={styles.dividerLine} />
       </div>
 
-        {activeTab === 'favorites'
-          ? <MeFavouriteView favorites={userInfo.favorites} />
-          : <MeActivityView userId={userInfo.userId} />
-        }
+      {activeTab === 'favorites'
+        ? <MeFavouriteView favorites={userInfo.favorites} />
+        : <MeActivityView userId={userInfo.userId} />
+      }
 
       <EditProfileDialog
         open={isEditDialogOpen}
@@ -103,19 +103,19 @@ const MeView = ({ userInfo, activeTab = 'favorites', onTabChange }) => {
         userInfo={userInfo}
         onProfileUpdate={handleProfileUpdate}
       />
-        <Snackbar
-            open={showSuccess}
-            autoHideDuration={3000}
-            onClose={() => setShowSuccess(false)}
-            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      <Snackbar
+        open={showSuccess}
+        autoHideDuration={3000}
+        onClose={() => setShowSuccess(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          severity="success"
+          sx={{ width: '100%' }}
         >
-            <Alert
-                severity="success"
-                sx={{ width: '100%' }}
-            >
-                Profile updated successfully!
-            </Alert>
-        </Snackbar>
+          Profile updated successfully!
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

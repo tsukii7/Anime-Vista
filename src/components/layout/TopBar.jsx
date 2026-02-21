@@ -6,9 +6,9 @@ import { getCurrentUser, isLoggedIn } from "../../firebase/auth.js";
 import { hashUidToNumber } from "../../firebase/db.js";
 import { useNavigate } from "react-router";
 import SearchBar from "./SearchBar.jsx";
-import {signOutUser} from "../../models/authentication/loginSlice.js";
+import { signOutUser } from "../../models/authentication/loginSlice.js";
 import './TopBar.css';
-import {useDispatch} from "react-redux";
+import { useDispatch } from "react-redux";
 
 const TopBar = () => {
     const navigate = useNavigate();
@@ -26,7 +26,9 @@ const TopBar = () => {
     const handleClose = () => setAnchorEl(null);
 
     const handleGoHome = () => {
-        navigate(`/${hashUidToNumber(getCurrentUser().userId)}`);
+        const user = getCurrentUser();
+        if (!user) return;
+        navigate(`/${hashUidToNumber(user.userId)}`);
         handleClose();
     };
 
@@ -39,7 +41,7 @@ const TopBar = () => {
     return (
         <header className="topbar">
             <div className="topbar-logo" onClick={() => navigate('/')}>AnimeVista</div>
-            <SearchBar/>
+            <SearchBar />
             <div>
                 <button className="user-button" onClick={handleUserClick}>
                     <Person2RoundedIcon className="user-icon" />

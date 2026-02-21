@@ -13,8 +13,9 @@ import {
     orderBy,
     onSnapshot, getDocs
 } from "firebase/firestore"
-import { db } from "./config.js"
+import { db, auth } from "./config.js"
 import { getCurrentUser } from "./auth.js";
+import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { fetchAnimeDataBatch, setActivitiesTotalPages } from "../models/me/meSlice.js";
 
@@ -29,6 +30,14 @@ function formatDate(date) {
 }
 
 async function addUser(userId, username, avatar) {
+    const userRef = doc(db, 'users', userId);
+    const userSnap = await getDoc(userRef);
+
+    if (userSnap.exists()) {
+        // User already exists, don't overwrite their data (favorites, introduction, etc.)
+        return;
+    }
+
     const newUser = {
         userId: userId,
         hashedUserId: hashUidToNumber(userId),
@@ -37,7 +46,7 @@ async function addUser(userId, username, avatar) {
         favorites: [],
         introduction: 'This is your introduction',
     }
-    await setDoc(doc(db, 'users', userId), newUser);
+    await setDoc(userRef, newUser);
 }
 
 async function getUserById(userId) {
@@ -142,7 +151,7 @@ function listenToComments(animeId, setComments) {
                 text: data.text,
                 likes: data.likedUsers.length,
                 hasLiked: user ? data.likedUsers.includes(user.userId) : false,
-                timestamp: formatDate(data.timestamp.toDate()),
+                timestamp: data.timestamp ? formatDate(data.timestamp.toDate()) : 'Just now',
                 userId: data.userId,
             });
         }
@@ -170,16 +179,31 @@ function useUserFavorites() {
     const [favorites, setFavorites] = useState([]);
 
     useEffect(() => {
-        const user = getCurrentUser();
-        if (!user) return;
+        let unsubFirestore = null;
 
-        const userRef = doc(db, 'users', user.userId);
-        const unsubscribe = onSnapshot(userRef, (docSnap) => {
-            const data = docSnap.data();
-            setFavorites(data?.favorites || []);
+        const unsubAuth = onAuthStateChanged(auth, (user) => {
+            // Clean up previous Firestore listener
+            if (unsubFirestore) {
+                unsubFirestore();
+                unsubFirestore = null;
+            }
+
+            if (!user) {
+                setFavorites([]);
+                return;
+            }
+
+            const userRef = doc(db, 'users', user.uid);
+            unsubFirestore = onSnapshot(userRef, (docSnap) => {
+                const data = docSnap.data();
+                setFavorites(data?.favorites || []);
+            });
         });
 
-        return () => unsubscribe();
+        return () => {
+            unsubAuth();
+            if (unsubFirestore) unsubFirestore();
+        };
     }, []);
 
     return favorites;

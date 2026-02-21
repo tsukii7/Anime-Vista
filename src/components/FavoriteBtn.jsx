@@ -19,11 +19,15 @@ const FavoriteBtn = ({ isFavorite, id }) => {
             return;
         }
 
-        const userId = getCurrentUser().userId;
-        if (isFavorite) {
-            await removeFavorite(userId, id);
-        } else {
-            await addFavorite(userId, id);
+        try {
+            const userId = getCurrentUser().userId;
+            if (isFavorite) {
+                await removeFavorite(userId, id);
+            } else {
+                await addFavorite(userId, id);
+            }
+        } catch (err) {
+            console.error('Error updating favorite:', err);
         }
     }
 

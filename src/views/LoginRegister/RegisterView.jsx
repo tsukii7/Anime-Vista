@@ -4,7 +4,7 @@ import { register } from '../../models/authentication/loginSlice';
 import "../../styles/LoginRegister.css";
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
-import {useNavigate} from "react-router";
+import { useNavigate } from "react-router";
 
 export function RegisterView() {
     const dispatch = useDispatch();
@@ -54,7 +54,7 @@ export function RegisterView() {
             return;
         }
 
-        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
         if (!passwordRegex.test(password)) {
             showAlert('Password must be at least 8 characters and include both letters and numbers');
             return;

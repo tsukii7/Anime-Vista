@@ -1,4 +1,4 @@
-> 🌐 Read this in Chinese: [简体中文](./README.zh-CN.md)
+> 🌐 Chinese Version: [简体中文](./README.zh-CN.md)
 
 # Anime Vista
 

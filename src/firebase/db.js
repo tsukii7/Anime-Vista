@@ -13,10 +13,10 @@ import {
     orderBy,
     onSnapshot, getDocs
 } from "firebase/firestore"
-import {db} from "./config.js"
-import {getCurrentUser} from "./auth.js";
-import {useEffect, useState} from "react";
-import {fetchAnimeDataBatch, setActivitiesTotalPages} from "../models/me/meSlice.js";
+import { db } from "./config.js"
+import { getCurrentUser } from "./auth.js";
+import { useEffect, useState } from "react";
+import { fetchAnimeDataBatch, setActivitiesTotalPages } from "../models/me/meSlice.js";
 
 function formatDate(date) {
     const pad = (n) => n.toString().padStart(2, '0');
@@ -82,13 +82,13 @@ async function getUserByNumber(num) {
 async function addFavorite(userId, animeId) {
     const userRef = doc(db, 'users', userId);
 
-    await updateDoc(userRef, {favorites: arrayUnion(animeId)})
+    await updateDoc(userRef, { favorites: arrayUnion(animeId) })
 }
 
 async function removeFavorite(userId, animeId) {
     const userRef = doc(db, 'users', userId);
 
-    await updateDoc(userRef, {favorites: arrayRemove(animeId)});
+    await updateDoc(userRef, { favorites: arrayRemove(animeId) });
 }
 
 async function getFavoritesByUserId(userId) {
@@ -156,13 +156,13 @@ function listenToComments(animeId, setComments) {
 async function likeComment(userId, commentId) {
     const commentRef = doc(db, 'comments', commentId);
 
-    await updateDoc(commentRef, {likedUsers: arrayUnion(userId)});
+    await updateDoc(commentRef, { likedUsers: arrayUnion(userId) });
 }
 
 async function unlikeComment(userId, commentId) {
     const commentRef = doc(db, 'comments', commentId);
 
-    await updateDoc(commentRef, {likedUsers: arrayRemove(userId)});
+    await updateDoc(commentRef, { likedUsers: arrayRemove(userId) });
 }
 
 
@@ -186,6 +186,10 @@ function useUserFavorites() {
 }
 
 function listenToUserInfoByNumber(userNumber, onData) {
+    if (!userNumber || isNaN(userNumber)) {
+        onData(null);
+        return () => { };
+    }
     const usersRef = collection(db, 'users');
     const q = query(usersRef, where('hashedUserId', '==', userNumber));
 
@@ -279,7 +283,7 @@ function listenToUserActivities(userId, currentPage, itemsPerPage, dispatch, cal
     return unsubscribe;
 }
 
-async function updateUserProfile(userId, {username, introduction}) {
+async function updateUserProfile(userId, { username, introduction }) {
     const userRef = doc(db, 'users', userId);
     await updateDoc(userRef, {
         username: username.trim(),

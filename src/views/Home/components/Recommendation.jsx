@@ -23,7 +23,7 @@ const Recommendation = () => {
                 />
                 <div className={styles.recommendationOverlay}>
                     <div className={styles.recommendationText}>
-                        <h2 className={styles.title}>Welcome to AnimeVista🌟</h2>
+                        <h2 className={styles.title}>Welcome to AnimeVista</h2>
                         <div>
                             {introText.map((text, index) => (
                                 <p key={index} className={styles.introText}>

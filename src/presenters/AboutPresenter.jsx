@@ -9,10 +9,16 @@ export default function AboutPresenter() {
 
     useEffect(() => {
         async function fetchDevelopers() {
-            const querySnapshot = await getDocs(collection(db, 'developers'));
-            const devs = querySnapshot.docs.map(doc => doc.data());
-            setDevelopers(devs);
-            setLoading(false);
+            try {
+                const querySnapshot = await getDocs(collection(db, 'developers'));
+                const devs = querySnapshot.docs.map(doc => doc.data());
+                setDevelopers(devs);
+            } catch (err) {
+                console.error("Error fetching developers:", err);
+                setDevelopers([]);
+            } finally {
+                setLoading(false);
+            }
         }
 
         fetchDevelopers();

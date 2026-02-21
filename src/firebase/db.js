@@ -127,6 +127,10 @@ async function addComment(userId, animeId, text) {
 }
 
 function listenToComments(animeId, setComments) {
+    if (!animeId) {
+        setComments([]);
+        return () => { };
+    }
     const commentsRef = collection(db, 'comments');
     const q = query(
         commentsRef,

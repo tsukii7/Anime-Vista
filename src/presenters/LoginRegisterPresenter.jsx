@@ -3,7 +3,7 @@ import { LoginView } from '../views/LoginRegister/LoginView.jsx';
 import { RegisterView } from '../views/LoginRegister/RegisterView.jsx';
 import { useNavigate } from 'react-router';
 import "../styles/LoginRegister.css";
-import {hashUidToNumber} from "../firebase/db.js";
+import { hashUidToNumber } from "../firebase/db.js";
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../firebase/config';
 
@@ -22,22 +22,24 @@ export default function LoginRegisterPresenter() {
     }, [navigate]);
 
     return (
-        <div className='loginRegister-box'>
-            <div className='tableBar'>
-                <button
-                    className={showLogin ? 'buttonActive' : 'buttonInactive'}
-                    onClick={() => setShowLogin(true)}
-                >
-                    Login
-                </button>
-                <button
-                    className={!showLogin ? 'buttonActive' : 'buttonInactive'}
-                    onClick={() => setShowLogin(false)}
-                >
-                    Register
-                </button>
+        <div className='login-wrapper'>
+            <div className='loginRegister-box'>
+                <div className='tableBar'>
+                    <button
+                        className={showLogin ? 'buttonActive' : 'buttonInactive'}
+                        onClick={() => setShowLogin(true)}
+                    >
+                        Login
+                    </button>
+                    <button
+                        className={!showLogin ? 'buttonActive' : 'buttonInactive'}
+                        onClick={() => setShowLogin(false)}
+                    >
+                        Register
+                    </button>
+                </div>
+                {showLogin ? <LoginView /> : <RegisterView />}
             </div>
-            {showLogin ? <LoginView /> : <RegisterView />}
         </div>
     );
 }

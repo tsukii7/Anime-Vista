@@ -1,11 +1,8 @@
 import React from 'react';
-import { StartServer } from 'react-router/server';
-import { Layout } from './root.jsx';
+import { ServerRouter } from 'react-router';
 
-export default function EntryServer({ context }) {
+export default function EntryServer({ context, url }) {
     return (
-        <StartServer context={context} router={{ hydration: true }}>
-            <Layout />
-        </StartServer>
+        <ServerRouter context={context} url={url} />
     );
 }

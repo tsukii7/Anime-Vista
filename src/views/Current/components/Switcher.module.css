@@ -1,0 +1,44 @@
+.switcher {
+    display: flex;
+    width: 207px;
+    height: 48px;
+    border: 1px solid var(--Schemes-Outline, #79747E);
+    border-radius: 9999px;
+    overflow: hidden;
+    background: transparent;
+}
+
+.switcherOption {
+    flex: 1 1 0;
+    height: 100%;
+    background-color: white;
+    color: var(--Schemes-On-Surface, #1D1B20);
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0.1px;
+    border: none;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.switcherOption.left {
+    border-top-left-radius: 100px;
+    border-bottom-left-radius: 100px;
+}
+
+.switcherOption.right {
+    border-top-right-radius: 100px;
+    border-bottom-right-radius: 100px;
+}
+
+.active {
+    background-color: rgba(232, 222, 248, 0.55);
+    color: var(--Schemes-On-Secondary-Container, #4A4459);
+}

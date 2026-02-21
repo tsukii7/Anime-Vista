@@ -1,0 +1,166 @@
+.cardWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 30px;
+}
+
+.cardContainer {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #D9D9D9;
+  border-radius: 4px;
+}
+
+.userAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.contentContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.userInfoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.headerSection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.usernameText {
+  color: #000;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.dateText {
+  color: #8E8E93;
+  font-size: 12px;
+}
+
+.commentText {
+  color: #000;
+  font-size: 14px;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.animeInfoContainer {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 6px;
+  border: 1px solid #D9D9D9;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.animeImage {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.animeDetails {
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.animeTitle {
+  color: #000;
+  font-size: 14px;
+  font-weight: 500;
+  word-wrap: break-word;
+}
+
+.animeTitle:hover {
+  cursor: pointer;
+  color: deepskyblue;
+}
+
+.animeScore {
+  color: #8E8E93;
+  font-size: 12px;
+}
+
+.interactionContainer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.likeSection {
+  display: flex;
+  align-items: center;
+}
+
+.likeBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.likeBtn:hover {
+  background-color: rgba(0, 174, 236, 0.1);
+}
+
+.likeBtn:hover .unliked,
+.likeBtn:hover .likeCount {
+  color: #00aeec;
+}
+
+.liked {
+  color: #00aeec;
+}
+
+.unliked {
+  color: #61666d;
+}
+
+.likeCount {
+  color: #61666d;
+  font-size: 12px;
+  transition: color 0.2s;
+}
+
+.liked + .likeCount {
+  color: #00aeec;
+}
+
+@media (max-width: 768px) {
+  .cardContainer {
+    flex-direction: column;
+  }
+  
+  .contentContainer {
+    width: 100%;
+  }
+  
+  .userAvatar {
+    margin-bottom: 10px;
+  }
+}

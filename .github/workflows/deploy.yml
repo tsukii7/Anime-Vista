@@ -1,0 +1,60 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Inject Environment Variables
+        run: |
+          cat << 'EOF' > .env
+          ${{ secrets.ENV_FILE }}
+          EOF
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Prepare Deployment Package
+        run: |
+          mkdir -p deploy-pkg/build
+          # Copy both build/client and build/server
+          cp -r build/* deploy-pkg/build/
+          cp package.json deploy-pkg/
+          cp package-lock.json deploy-pkg/
+          cp server.js deploy-pkg/
+
+      - name: Upload to VPS
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          ARGS: "-rltgoDzvO"
+          SOURCE: "deploy-pkg/"
+          REMOTE_HOST: "128.14.224.92"
+          REMOTE_USER: "ubuntu"
+          TARGET: "/www/wwwroot/anime-vista"
+
+      - name: Start/Restart Application
+        uses: appleboy/ssh-action@master
+        with:
+          host: 128.14.224.92
+          username: ubuntu
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /www/wwwroot/anime-vista
+            npm ci --omit=dev
+            pm2 restart anime-vista || pm2 start server.js --name anime-vista

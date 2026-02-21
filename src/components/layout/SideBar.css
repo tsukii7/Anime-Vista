@@ -1,0 +1,31 @@
+/* src/components/layout/SideBar.css */
+.sidebar {
+    width: 150px;
+    padding: 40px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: 100%;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    color: #49454f;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background 0.2s ease;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    background-color: #e8def8;
+    color: #1d1b20;
+}
+
+.nav-icon {
+    font-size: 24px;
+}

@@ -1,0 +1,55 @@
+/* src/components/layout/TopBar.css */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px;
+    background-color: #FEF7FF;
+    height: 60px;
+    /*border-bottom: 1px solid #ccc;*/
+}
+
+.topbar-logo {
+    font-size: 30px;
+    font-weight: bold;
+    color: #1D1B20;
+    height: 60px;
+    align-content: center;
+    cursor: pointer;
+}
+
+.topbar-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.topbar-search input {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.user-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    height: 60px;
+    width: 60px;
+}
+
+.user-button:hover {
+    background: rgba(128, 128, 128, 0.2);
+    border-radius: 50%;
+    height: 60px;
+    width: 60px;
+    margin-bottom: 1px;
+}
+
+user-icon {
+    font-size: 24px;
+    color: var(--Schemes-On-Surface-Variant, #49454F);
+}
+user-icon:hover {
+    padding-bottom: 1px;
+}

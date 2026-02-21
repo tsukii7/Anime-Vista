@@ -1,0 +1,61 @@
+.card {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    border-radius: 8px;
+    background-color: #f8f8f8;
+    font-size: 14px;
+    box-shadow: 0 0 0 1px #eee;
+    gap: 20px;
+    height: 100px;
+    width: 250px;
+}
+
+.avatar {
+    height: 100%;
+    width: 75px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.textBlock {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 100%;
+}
+
+.nameBlock {
+    display: flex;
+    flex-direction: column;
+}
+
+.nativeName {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.fullName {
+    font-size: 13px;
+    margin: 0;
+}
+
+.detail {
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* Role-based background colors */
+.main {
+    background-color: #f3ecff;
+}
+
+.supporting {
+    background-color: #f9f6ff;
+}
+
+.background {
+    background-color: #fcfbff;
+}

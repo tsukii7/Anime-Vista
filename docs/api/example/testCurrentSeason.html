@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Current Season Anime</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .day {
+            margin-bottom: 20px;
+        }
+        .anime {
+            margin-left: 20px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .anime img {
+            width: 100px;
+            height: 140px;
+            margin-right: 15px;
+            border-radius: 5px;
+        }
+        .anime h3 {
+            margin: 5px 0;
+        }
+        .anime-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .anime-card {
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .anime-card img {
+            width: 100%;
+            height: auto;
+        }
+        .anime-card .details {
+            padding: 10px;
+        }
+        .anime-card .title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .anime-card .trending {
+            font-size: 14px;
+            color: #666;
+        }
+        .anime-card .date {
+            font-size: 12px;
+            color: #888;
+        }
+        .list-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .list-container .anime-card {
+            flex: 1 1 calc(25% - 20px); /* 每行显示 4 个卡片 */
+            max-width: calc(25% - 20px); /* 每行显示 4 个卡片 */
+        }
+    </style>
+</head>
+<body>
+    <h1>Current Season Anime</h1>
+    <button onclick="fetchCurrentSeasonTimeline()">Timeline</button>
+    <button onclick="fetchCurrentSeasonList()">List</button>
+    <div id="output"></div>
+    <div id="anime-container" class="list-container" style="display: none;"></div>
+
+    <script>
+        async function fetchCurrentSeasonTimeline() {
+            document.getElementById('output').style.display = 'block';
+            document.getElementById('anime-container').style.display = 'none';
+            const query = `
+                query {
+                    Page(page: 1, perPage: 50) {
+                        media(season: SPRING, seasonYear: 2025, type: ANIME) {
+                            title {
+                                romaji
+                            }
+                            coverImage {
+                                large
+                            }
+                            airingSchedule {
+                                edges {
+                                    node {
+                                        id
+                                        airingAt
+                                        episode
+                                        mediaId
+                                        media {
+                                            title {
+                                                romaji
+                                            }
+                                            episodes
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            `;
+
+            try {
+                const response = await fetch('https://graphql.anilist.co', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ query })
+                });
+
+                const data = await response.json();
+                displayAnimeUpdates(data.data.Page.media);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                document.getElementById('output').innerText = 'Error fetching data';
+            }
+        }
+
+        function displayAnimeUpdates(animeList) {
+            const output = document.getElementById('output');
+            const today = new Date();
+            const endOfWeek = new Date(today);
+            endOfWeek.setDate(today.getDate() + 7); // Set to 7 days from today
+            const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const animeByDay = {};
+
+            // Initialize the animeByDay object
+            for (let i = 0; i < 7; i++) {
+                const currentDate = new Date(today);
+                currentDate.setDate(today.getDate() + i);
+                const dayName = daysOfWeek[currentDate.getUTCDay()];
+                animeByDay[dayName] = [];
+            }
+
+            // Organize anime by airing day
+            animeList.forEach(anime => {
+                anime.airingSchedule.edges.forEach(edge => {
+                    const airingDate = new Date(edge.node.airingAt * 1000);
+                    if (airingDate >= today && airingDate <= endOfWeek) { // Only include the next 7 days
+                        const dayName = daysOfWeek[airingDate.getUTCDay()]; // Get the day of the week
+                        animeByDay[dayName].push({
+                            title: anime.title.romaji,
+                            episode: edge.node.episode,
+                            airingAt: airingDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                            date: airingDate.toLocaleDateString(), // Get the date in MM/DD/YYYY format
+                            coverImage: anime.coverImage.large // Get the cover image
+                        });
+                    }
+                });
+            });
+
+            // Display the anime updates starting from today
+            output.innerHTML = ''; // Clear previous output
+            for (let i = 0; i < 7; i++) {
+                const currentDate = new Date(today);
+                currentDate.setDate(today.getDate() + i);
+                const dayName = daysOfWeek[currentDate.getUTCDay()];
+                if (animeByDay[dayName].length > 0) {
+                    const dayDiv = document.createElement('div');
+                    dayDiv.classList.add('day');
+                    dayDiv.innerHTML = `<h2>${dayName} (${animeByDay[dayName][0].date})</h2>`;
+                    animeByDay[dayName].forEach(anime => {
+                        const animeDiv = document.createElement('div');
+                        animeDiv.classList.add('anime');
+                        animeDiv.innerHTML = `
+                            <img src="${anime.coverImage}" alt="${anime.title}">
+                            <div>
+                                <h3>${anime.title} - Episode ${anime.episode}</h3>
+                                <p>Airing at: ${anime.airingAt}</p>
+                            </div>
+                        `;
+                        dayDiv.appendChild(animeDiv);
+                    });
+                    output.appendChild(dayDiv);
+                }
+            }
+        }
+
+        async function fetchCurrentSeasonList() {
+            document.getElementById('output').style.display = 'none';
+            document.getElementById('anime-container').style.display = 'block';
+            const query = `
+                query {
+                    Page(page: 1, perPage: 50) {
+                        media(season: SPRING, seasonYear: 2025, type: ANIME) {
+                            title {
+                                romaji
+                                english
+                            }
+                            coverImage {
+                                large
+                            }
+                            trending
+                            startDate {
+                                year
+                                month
+                                day
+                            }
+                        }
+                    }
+                }
+            `;
+
+            try {
+                const response = await fetch('https://graphql.anilist.co', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ query })
+                });
+
+                const data = await response.json();
+                renderAnimeCards(data.data.Page.media);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                document.getElementById('anime-container').innerText = 'Error fetching data';
+            }
+        }
+
+        function renderAnimeCards(animeList) {
+            const container = document.getElementById('anime-container');
+            container.innerHTML = ''; // Clear previous content
+
+            // Sort anime by trending
+            animeList.sort((a, b) => (b.trending || 0) - (a.trending || 0));
+
+            animeList.forEach(anime => {
+                const card = document.createElement('div');
+                card.className = 'anime-card';
+
+                // Cover image
+                const img = document.createElement('img');
+                img.src = anime.coverImage.large;
+                img.alt = anime.title.romaji;
+
+                // Details
+                const details = document.createElement('div');
+                details.className = 'details';
+
+                const title = document.createElement('div');
+                title.className = 'title';
+                title.textContent = anime.title.romaji || anime.title.english;
+
+                const trending = document.createElement('div');
+                trending.className = 'trending';
+                trending.textContent = `Trending: ${anime.trending || 'N/A'}`;
+
+                const date = document.createElement('div');
+                date.className = 'date';
+                date.textContent = `Released: ${anime.startDate.year}-${anime.startDate.month}-${anime.startDate.day}`;
+
+                // Assemble card
+                details.appendChild(title);
+                details.appendChild(trending);
+                details.appendChild(date);
+                card.appendChild(img);
+                card.appendChild(details);
+                container.appendChild(card);
+            });
+        }
+
+        // Fetch current season anime on page load
+        fetchCurrentSeasonTimeline();
+    </script>
+</body>
+</html>

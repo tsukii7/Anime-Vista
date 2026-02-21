@@ -1,0 +1,43 @@
+// src/components/layout/SearchBar.jsx
+import React, { useState } from 'react';
+import './SearchBar.css';
+import FilterAltRoundedIcon from '@mui/icons-material/FilterAltRounded';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
+import { useNavigate } from 'react-router';
+import { useDispatch } from 'react-redux';
+import {clearFilters, updateFilter} from "../../models/search/filterSlice.js";
+
+const SearchBar = ({ placeholder = 'Search anime...' }) => {
+    const [keyword, setKeyword] = useState('');
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const handleSearch = () => {
+        if (!keyword.trim()) return;
+
+        navigate('/search');
+        dispatch(clearFilters());
+        dispatch(updateFilter({ name: 'search', value: keyword.trim() }));
+        setKeyword(''); // Clear the input field after search
+    };
+
+    return (
+        <div className="search-bar">
+            <input
+                className="search-input"
+                type="text"
+                placeholder={placeholder}
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleSearch();
+                }}
+            />
+            <button className="search-button" onClick={handleSearch}>
+                <SearchRoundedIcon className={'search-icon'}/>
+            </button>
+        </div>
+    );
+};
+
+export default SearchBar;

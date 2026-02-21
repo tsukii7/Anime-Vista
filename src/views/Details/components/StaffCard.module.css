@@ -1,0 +1,39 @@
+.card {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    border-radius: 8px;
+    background-color: #f7f3ff;
+    box-shadow: 0 0 0 1px #e2e2e2;
+    font-size: 14px;
+    gap: 20px;
+    height: 100px;
+    width: 250px;
+}
+
+.avatar {
+    height: 100%;
+    width: 75px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.text {
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 100%;
+}
+
+.name {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.role {
+    font-size: 14px;
+    line-height: 1.4;
+}

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AniList API Test - Anime Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .anime-details {
+            display: flex;
+            margin: 20px;
+        }
+        .main-content {
+            flex: 3;
+            margin-right: 20px;
+        }
+        .sidebar {
+            flex: 1;
+            display: flex;
+            gap: 20px;
+        }
+        .anime-image {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .anime-image img {
+            width: 200px;
+            height: auto;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            margin-bottom: 10px;
+        }
+        .section ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .section li {
+            margin-bottom: 10px;
+        }
+        .character-list, .staff-list, .similar-anime-list {
+            margin-top: 20px;
+        }
+        .character-item, .staff-item, .similar-anime-item {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+        .character-item img, .staff-item img, .similar-anime-item img {
+            width: 100px;
+            height: auto;
+            margin-right: 10px;
+        }
+        .character-info, .staff-info, .similar-anime-info {
+            display: inline-block;
+            vertical-align: top;
+        }
+        .similar-anime-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .similar-anime-item {
+            flex: 0 0 auto;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <h1>AniList API Test - Anime Details</h1>
+    <input type="number" id="animeId" placeholder="Enter Anime ID" />
+    <button onclick="fetchAnimeDetails()">Get Anime Details</button>
+    <div id="output" class="anime-details"></div>
+
+    <script>
+        function fetchAnimeDetails() {
+            const animeId = document.getElementById('animeId').value;
+            const query = `
+                query ($id: Int) {
+                    Media(id: $id) {
+                        id
+                        title {
+                            romaji
+                            english
+                        }
+                        coverImage {
+                            large
+                        }
+                        description
+                        genres
+                        averageScore
+                        meanScore
+                        popularity
+                        favourites
+                        status
+                        episodes
+                        duration
+                        format
+                        startDate {
+                            year
+                            month
+                            day
+                        }
+                        endDate {
+                            year
+                            month
+                            day
+                        }
+                        season
+                        studios(isMain: true) {
+                            nodes {
+                                name
+                            }
+                        }
+                        characters(perPage: 10) {
+                            edges {
+                                node {
+                                    id
+                                    name {
+                                        full
+                                    }
+                                    image {
+                                        large
+                                    }
+                                }
+                                role
+                                voiceActors(language: JAPANESE) {
+                                    name {
+                                        full
+                                    }
+                                }
+                            }
+                        }
+                        staff(perPage: 10) {
+                            edges {
+                                node {
+                                    id
+                                    name {
+                                        full
+                                    }
+                                    image {
+                                        large
+                                    }
+                                }
+                                role
+                            }
+                        }
+                        relations {
+                            edges {
+                                node {
+                                    id
+                                    title {
+                                        romaji
+                                        english
+                                    }
+                                    coverImage {
+                                        large
+                                    }
+                                    genres
+                                }
+                                relationType
+                            }
+                        }
+                    }
+                }
+            `;
+
+            fetch('https://graphql.anilist.co', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    query,
+                    variables: { id: parseInt(animeId) }
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data || !data.data || !data.data.Media) {
+                    throw new Error('Anime not found or data format is incorrect.');
+                }
+
+                const anime = data.data.Media;
+                const output = document.getElementById('output');
+                output.innerHTML = ''; // Clear previous content
+
+                // Main content
+                const mainContent = document.createElement('div');
+                mainContent.classList.add('main-content');
+
+                // Cover image
+                const animeImage = document.createElement('div');
+                animeImage.classList.add('anime-image');
+                const img = document.createElement('img');
+                img.src = anime.coverImage.large;
+                img.alt = anime.title.romaji;
+                animeImage.appendChild(img);
+
+                // Basic information
+                const animeInfo = document.createElement('div');
+                animeInfo.innerHTML = `
+                    <h1>${anime.title.romaji} (${anime.title.english})</h1>
+                    <p>${anime.description}</p>
+                    <div class="section">
+                        <h2>Basic Information</h2>
+                        <ul>
+                            <li>Type: ${anime.genres.join(', ')}</li>
+                            <li>Average Score: ${anime.averageScore}</li>
+                            <li>Mean Score: ${anime.meanScore}</li>
+                            <li>Popularity: ${anime.popularity}</li>
+                            <li>Favourites: ${anime.favourites}</li>
+                            <li>Status: ${anime.status}</li>
+                            <li>Episodes: ${anime.episodes}</li>
+                            <li>Duration per Episode: ${anime.duration} minutes</li>
+                            <li>Format: ${anime.format}</li>
+                            <li>Start Date: ${anime.startDate.year}-${anime.startDate.month}-${anime.startDate.day}</li>
+                            <li>End Date: ${anime.endDate.year}-${anime.endDate.month}-${anime.endDate.day}</li>
+                            <li>Season: ${anime.season}</li>
+                            <li>Studios: ${anime.studios.nodes.map(studio => studio.name).join(', ')}</li>
+                        </ul>
+                    </div>
+                `;
+
+                // Similar anime information
+                const similarAnimeSection = document.createElement('div');
+                similarAnimeSection.classList.add('section', 'similar-anime-list');
+                similarAnimeSection.innerHTML = '<h2>Similar Anime</h2>';
+
+                const similarAnimeContainer = document.createElement('div');
+                similarAnimeContainer.classList.add('similar-anime-list');
+
+                anime.relations.edges.forEach(edge => {
+                    const similarAnime = edge.node;
+                    const similarAnimeItem = document.createElement('div');
+                    similarAnimeItem.classList.add('similar-anime-item');
+
+                    const similarAnimeImage = document.createElement('img');
+                    similarAnimeImage.src = similarAnime.coverImage.large;
+                    similarAnimeImage.alt = similarAnime.title.romaji;
+
+                    const similarAnimeInfo = document.createElement('div');
+                    similarAnimeInfo.classList.add('similar-anime-info');
+                    similarAnimeInfo.innerHTML = `
+                        <h3>${similarAnime.title.romaji} (${similarAnime.title.english})</h3>
+                        <p>Tags: ${similarAnime.genres.join(', ')}</p>
+                    `;
+
+                    similarAnimeItem.appendChild(similarAnimeImage);
+                    similarAnimeItem.appendChild(similarAnimeInfo);
+                    similarAnimeContainer.appendChild(similarAnimeItem);
+                });
+
+                similarAnimeSection.appendChild(similarAnimeContainer);
+
+                mainContent.appendChild(animeImage);
+                mainContent.appendChild(animeInfo);
+                mainContent.appendChild(similarAnimeSection);
+
+                // Sidebar
+                const sidebar = document.createElement('div');
+                sidebar.classList.add('sidebar');
+
+                // Character information
+                const characterSection = document.createElement('div');
+                characterSection.classList.add('section', 'character-list');
+                characterSection.innerHTML = '<h2>Character Information</h2>';
+
+                anime.characters.edges.forEach(edge => {
+                    const character = edge.node;
+                    const characterItem = document.createElement('div');
+                    characterItem.classList.add('character-item');
+
+                    const characterImage = document.createElement('img');
+                    characterImage.src = character.image.large;
+                    characterImage.alt = character.name.full;
+
+                    const characterInfo = document.createElement('div');
+                    characterInfo.classList.add('character-info');
+                    characterInfo.innerHTML = `
+                        <h3>${character.name.full}</h3>
+                        <p>Character Type: ${edge.role}</p>
+                        <p>Voice Actors: ${edge.voiceActors.map(va => va.name.full).join(', ')}</p>
+                    `;
+
+                    characterItem.appendChild(characterImage);
+                    characterItem.appendChild(characterInfo);
+                    characterSection.appendChild(characterItem);
+                });
+
+                // Staff information
+                const staffSection = document.createElement('div');
+                staffSection.classList.add('section', 'staff-list');
+                staffSection.innerHTML = '<h2>Staff Information</h2>';
+
+                anime.staff.edges.forEach(edge => {
+                    const staff = edge.node;
+                    const staffItem = document.createElement('div');
+                    staffItem.classList.add('staff-item');
+
+                    const staffImage = document.createElement('img');
+                    staffImage.src = staff.image.large;
+                    staffImage.alt = staff.name.full;
+
+                    const staffInfo = document.createElement('div');
+                    staffInfo.classList.add('staff-info');
+                    staffInfo.innerHTML = `
+                        <h3>${staff.name.full}</h3>
+                        <p>Position: ${edge.role}</p>
+                    `;
+
+                    staffItem.appendChild(staffImage);
+                    staffItem.appendChild(staffInfo);
+                    staffSection.appendChild(staffItem);
+                });
+
+                sidebar.appendChild(characterSection);
+                sidebar.appendChild(staffSection);
+
+                output.appendChild(mainContent);
+                output.appendChild(sidebar);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const output = document.getElementById('output');
+                output.innerHTML = `An error occurred: ${error.message}`;
+            });
+        }
+    </script>
+</body>
+</html>

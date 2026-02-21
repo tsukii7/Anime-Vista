@@ -1,0 +1,97 @@
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 24px;
+    background-color: white;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.title {
+    line-height: 35px;
+    font-size: 24px;
+    font-weight: bold;
+    color: black;
+    margin: 0;
+}
+
+.altTitle {
+    font-size: 18px;
+    color: #8e8e93;
+    margin: 0;
+}
+
+.heartBtn {
+    background: none;
+    border: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.favoriteText{
+    padding-left: 10px;
+}
+
+.heartBtn:hover .favoriteBtn,
+.heartBtn:hover .favoriteText {
+    color: #f2b9d4;
+}
+
+.favoriteWrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.content {
+    display: flex;
+    gap: 40px;
+}
+
+.cover {
+    width: 216px;
+    height: 310px;
+    object-fit: cover;
+}
+
+.details {
+    flex: 1;
+}
+
+.statusLine {
+    margin-top: 0;
+    color: #8e8e93;
+    font-size: 15px;
+}
+
+.statusLineIn {
+}
+
+.introduction {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #000;
+}
+
+.tags {
+    margin-top: 24px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    background-color: #65558f;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 9999px;
+    font-size: 14px;
+    font-weight: 500;
+}

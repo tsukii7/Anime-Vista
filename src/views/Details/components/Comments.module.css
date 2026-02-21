@@ -1,0 +1,64 @@
+.container {
+    width: 100%;
+    padding-bottom: 40px;
+    font-family: 'Inter', sans-serif;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.divider {
+    border: none;
+    height: 1px;
+    background-color: #ddd;
+    margin-bottom: 24px;
+}
+
+.inputBox {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.textarea {
+    flex: 1;
+    height: 80px;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: none;
+    border: 1px solid #ccc;
+    color: #333;
+}
+
+
+.sendBtn {
+    height: 40px;
+    align-self: flex-start;
+    padding: 0 16px;
+    border: none;
+    background-color: #00aeec;
+    color: white;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.sendBtn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.commentList {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.bottomMarker {
+    height: 1px;
+}

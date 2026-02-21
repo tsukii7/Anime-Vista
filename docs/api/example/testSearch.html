@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AniList API Test - Search Page</title>
+    <style>
+        .anime {
+            margin-bottom: 20px;
+        }
+        .anime img {
+            max-width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <h1>AniList API Test - Search Page</h1>
+    <button id="fetchButton">Search Anime</button>
+    <div id="output"></div>
+
+    <script>
+        document.getElementById('fetchButton').addEventListener('click', () => {
+            // GraphQL query
+            const query = `
+                query ($search: String, $genres: [String], $year: Int, $season: MediaSeason, $format: MediaFormat, $status: MediaStatus) {
+                    Page(page: 1, perPage: 10) {
+                        media(search: $search, genre_in: $genres, seasonYear: $year, season: $season, format: $format, status: $status) {
+                            id
+                            title {
+                                romaji
+                                english
+                            }
+                            genres
+                            season
+                            seasonYear
+                            status
+                            format
+                            popularity
+                            averageScore
+                            startDate {
+                                year
+                                month
+                                day
+                            }
+                            coverImage {
+                                large
+                            }
+                        }
+                    }
+                }
+            `;
+
+            // Variables with some conditions set and others as default (Any)
+            const variables = {
+                search: null, // Default: Any
+                genres: ["Action", "Drama"], // Specific genres
+                year: null, // Default: Any
+                season: "SPRING", // Specific season
+                format: "TV", // Specific format
+                status: "FINISHED" // Specific status
+            };
+
+            // Use Fetch to call the API
+            fetch('https://graphql.anilist.co', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ query, variables })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const outputDiv = document.getElementById('output');
+                outputDiv.innerHTML = ''; // Clear previous results
+                const mediaList = data.data.Page.media;
+
+                // Iterate through each anime and add to the page
+                mediaList.forEach(anime => {
+                    const animeDiv = document.createElement('div');
+                    animeDiv.classList.add('anime');
+
+                    // Create cover image
+                    const coverImage = document.createElement('img');
+                    coverImage.src = anime.coverImage.large;
+                    coverImage.alt = anime.title.romaji; // Set alt attribute
+                    animeDiv.appendChild(coverImage);
+                    
+                    // Create title
+                    const title = document.createElement('h2');
+                    title.textContent = anime.title.romaji || anime.title.english;
+                    animeDiv.appendChild(title);
+
+                    // Create genres
+                    const genres = document.createElement('p');
+                    genres.textContent = `Genres: ${anime.genres.join(', ')}`; // Join genres array into a string
+                    animeDiv.appendChild(genres);
+
+                    // Create season
+                    const season = document.createElement('p');
+                    season.textContent = `Season: ${anime.season}`;
+                    animeDiv.appendChild(season);
+
+                    // Create year
+                    const year = document.createElement('p');
+                    year.textContent = `Year: ${anime.seasonYear}`;
+                    animeDiv.appendChild(year);
+
+                    // Create status
+                    const status = document.createElement('p');
+                    status.textContent = `Status: ${anime.status}`;
+                    animeDiv.appendChild(status);
+
+                    // Create format
+                    const format = document.createElement('p');
+                    format.textContent = `Format: ${anime.format}`;
+                    animeDiv.appendChild(format);
+
+                    // Create popularity
+                    const popularity = document.createElement('p');
+                    popularity.textContent = `Popularity: ${anime.popularity}`;
+                    animeDiv.appendChild(popularity);
+
+                    // Create average score
+                    const averageScore = document.createElement('p');
+                    averageScore.textContent = `Average Score: ${anime.averageScore}`;
+                    animeDiv.appendChild(averageScore);
+
+                    // Create start date
+                    const startDate = document.createElement('p');
+                    startDate.textContent = `Start Date: ${anime.startDate.year}-${anime.startDate.month}-${anime.startDate.day}`;
+                    animeDiv.appendChild(startDate);
+
+                    // Add anime information to output area
+                    outputDiv.appendChild(animeDiv);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>

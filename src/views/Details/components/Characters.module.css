@@ -1,0 +1,41 @@
+.container {
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+}
+
+.divider {
+    border: none;
+    height: 1px;
+    background-color: #ddd;
+    margin-bottom: 24px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.toggle {
+    font-size: 14px;
+    color: #007aff;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.grid {
+    display: grid;
+    /* 自动调整一行几个卡片 */
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 20px;
+    justify-items: center;
+}
+

@@ -1,0 +1,94 @@
+.commentRow {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.left {
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.right {
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 12px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.commentBox {
+    max-width: min(800px, 70%);
+    min-width: max(200px, 30%);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 12px 16px;
+    background-color: #fff;
+    text-align: left;
+}
+
+.username {
+    color: gray;
+    font-weight: 500;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.username:hover {
+    color: deepskyblue;
+    cursor: pointer;
+}
+
+.text {
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 8px;
+    white-space: pre-wrap;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: #555;
+}
+
+.timestamp {
+    color: #999;
+}
+
+.like {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.like:hover .unliked,
+.like:hover .likeCount {
+    color: #00aeec;
+    cursor: pointer;
+}
+
+.likeBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.liked {
+    color: #00aeec;
+}
+
+.unliked {
+    color: #61666d;
+}

@@ -1,0 +1,172 @@
+/* 主容器 */
+.mainContainer {
+  width: 100%; /* 新增响应式 */
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0 auto; /* 水平居中 */
+  position: relative;
+  background: var(--Schemes-On-Primary, white);
+  overflow: hidden;
+  border-radius: 32px;
+}
+
+/* 修改后的背景图片 */
+.backgroundImage {
+  width: 100%;
+  height: 200px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  object-fit: cover;
+  object-position: center 15%; /* 保持顶部对齐 */
+  opacity: 0.4;
+  z-index: 0; /* 确保在底层 */
+}
+
+
+/* 编辑按钮容器 */
+.editButtonContainer {
+  width: 70px;
+  padding: 10px;
+  position: absolute;
+  right: 60px; /* 固定右边距 */
+
+  top: 53px;
+  background: var(--Separators-Non-opaque, rgba(84, 84, 86, 0.34));
+  border-radius: 12px;
+  outline: 1px solid var(--Border-Default-Default, #D9D9D9);
+  outline-offset: -1px;
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.editButtonContainer:hover {
+  background: rgba(247, 242, 250, 0.5);
+  cursor: pointer;
+}
+
+/* 当容器宽度不足以显示完整内容时 */
+@media (max-width: 800px) {
+  .editButtonContainer {
+    right: auto;
+    left: 800px; /* 左边固定间距 */
+  }
+}
+
+/* 编辑图标 */
+.editIconContainer {
+  width: 24px;
+  height: 24px;
+  position: relative;
+}
+
+/* 用户信息区 */
+.userProfileSection {
+  position: absolute;
+  left: 60px;
+  top: 47px;
+  display: inline-flex;
+  align-items: center;
+  gap: 38px;
+}
+
+.userAvatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 100px;
+}
+
+.userInfoText {
+  display: flex;
+  flex-direction: column;
+}
+
+.userGreeting {
+  color: black;
+  font-family: 'Roboto';
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 28px;
+}
+
+.userDetails {
+  color: var(--Grays-Black, black);
+  font-family: 'Inter';
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 22.4px;
+  margin-top: 8px;
+}
+.contentArea{
+  height: 100%;
+}
+/* 修改后的标签导航相关样式 */
+.tabNavigation {
+  width: 100%;
+  position: absolute;
+  top: 200px;
+  background: var(--Schemes-Surface-Variant, #E7E0EC);
+}
+
+.tabList {
+  display: flex;
+  justify-content: center; /* 水平居中两个Tab */
+  align-items: center;
+  width: 100%;
+  height: 48px;
+}
+
+.tabItem {
+  flex-grow: 1; /* 使每个Tab占据相同的宽度 */
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  height: 100%; /* 确保TabItem的高度与tabList一致 */
+}
+
+.tabItem:hover,
+.tabItem.active {
+  background-color: rgba(101, 85, 143, 0.05);
+  color: #1d1b20;
+}
+  /* 修改按钮样式 */
+.activeTab,
+.inactiveTab {
+  padding: 14px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Roboto';
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* 垂直居中 */
+  align-items: center; /* 水平居中 */
+  width: 100%; /* 使按钮占据整个TabItem的宽度 */
+  height: 100%; /* 使按钮占据整个TabItem的高度 */
+}
+.activeTab {
+  background-color: rgba(101, 85, 143, 0.1);
+  border-bottom:  1px solid var(--Schemes-Primary, #65558F);
+}
+
+.inactiveTab {
+  color: var(--Schemes-On-Surface-Variant, #49454F);
+}
+
+.tabIndicator {
+  width: 86px;
+  height: 3px;
+  margin-top: 4px;
+  background: var(--Schemes-Primary, #65558F);
+  border-radius: 100px 100px 0 0;
+}
+
+.dividerLine {
+  width: 100%;
+  height: 1px;
+  background-color: var(--Schemes-Outline-Variant, #CAC4D0);
+}

@@ -1,9 +1,11 @@
 /* 主容器 */
 .mainContainer {
-  width: 100%; /* 新增响应式 */
+  width: 100%;
+  /* 新增响应式 */
   min-width: 320px;
   min-height: 100%;
-  margin: 0 auto; /* 水平居中 */
+  margin: 0 auto;
+  /* 水平居中 */
   position: relative;
   background: var(--Schemes-On-Primary, white);
   overflow: hidden;
@@ -18,31 +20,38 @@
   left: 0;
   top: 0;
   object-fit: cover;
-  object-position: center 15%; /* 保持顶部对齐 */
+  object-position: center 15%;
+  /* 保持顶部对齐 */
   opacity: 0.4;
-  z-index: 0; /* 确保在底层 */
+  z-index: 0;
+  /* 确保在底层 */
 }
 
 
 /* 编辑按钮容器 */
 .editButtonContainer {
-  width: 70px;
-  padding: 10px;
+  padding: 8px 16px;
   position: absolute;
-  right: 60px; /* 固定右边距 */
-
+  right: 60px;
   top: 53px;
-  background: var(--Separators-Non-opaque, rgba(84, 84, 86, 0.34));
-  border-radius: 12px;
-  outline: 1px solid var(--Border-Default-Default, #D9D9D9);
-  outline-offset: -1px;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   display: inline-flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
 }
 
 .editButtonContainer:hover {
-  background: rgba(247, 242, 250, 0.5);
+  background: rgba(255, 255, 255, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
   cursor: pointer;
 }
 
@@ -50,15 +59,24 @@
 @media (max-width: 800px) {
   .editButtonContainer {
     right: auto;
-    left: 800px; /* 左边固定间距 */
+    left: 800px;
+    /* 左边固定间距 */
   }
 }
 
 /* 编辑图标 */
 .editIconContainer {
-  width: 24px;
-  height: 24px;
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1d1b20;
+}
+
+.editText {
+  font-family: 'Inter', 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1d1b20;
 }
 
 /* 用户信息区 */
@@ -98,9 +116,11 @@
   line-height: 22.4px;
   margin-top: 8px;
 }
-.contentArea{
+
+.contentArea {
   height: 100%;
 }
+
 /* 修改后的标签导航相关样式 */
 .tabNavigation {
   width: 100%;
@@ -111,58 +131,74 @@
 
 .tabList {
   display: flex;
-  justify-content: center; /* 水平居中两个Tab */
+  justify-content: center;
+  /* 水平居中两个Tab */
   align-items: center;
   width: 100%;
   height: 48px;
 }
 
 .tabItem {
-  flex-grow: 1; /* 使每个Tab占据相同的宽度 */
+  flex-grow: 1;
+  /* 使每个Tab占据相同的宽度 */
   display: flex;
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中 */
-  height: 100%; /* 确保TabItem的高度与tabList一致 */
+  justify-content: center;
+  /* 水平居中 */
+  align-items: center;
+  /* 垂直居中 */
+  height: 100%;
+  /* 确保TabItem的高度与tabList一致 */
 }
 
-.tabItem:hover,
-.tabItem.active {
-  background-color: rgba(101, 85, 143, 0.05);
-  color: #1d1b20;
-}
-  /* 修改按钮样式 */
-.activeTab,
-.inactiveTab {
-  padding: 14px 0;
-  background: none;
-  border: none;
+.tabItem:hover {
+  background-color: rgba(149, 142, 172, 0.08);
   cursor: pointer;
-  font-family: 'Roboto';
-  font-size: 22px;
-  font-weight: 400;
-  line-height: 28px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* 垂直居中 */
-  align-items: center; /* 水平居中 */
-  width: 100%; /* 使按钮占据整个TabItem的宽度 */
-  height: 100%; /* 使按钮占据整个TabItem的高度 */
-}
-.activeTab {
-  background-color: rgba(101, 85, 143, 0.1);
-  border-bottom:  1px solid var(--Schemes-Primary, #65558F);
 }
 
-.inactiveTab {
+.tabLabel {
+  font-size: 20px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
   color: var(--Schemes-On-Surface-Variant, #49454F);
 }
 
-.tabIndicator {
-  width: 86px;
-  height: 3px;
-  margin-top: 4px;
-  background: var(--Schemes-Primary, #65558F);
-  border-radius: 100px 100px 0 0;
+.activeTab .tabLabel {
+  color: var(--Schemes-Primary, #65558F);
+  font-weight: 600;
+}
+
+.activeTab {
+  background-color: rgba(149, 142, 172, 0.2) !important;
+}
+
+.tabUnderline {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: #A6A1B8;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+/* 修改按钮样式 */
+.activeTab,
+.inactiveTab {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: background-color 0.2s ease;
+}
+
+.activeTab {
+  background-color: rgba(149, 142, 172, 0.2) !important;
 }
 
 .dividerLine {

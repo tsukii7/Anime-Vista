@@ -1,12 +1,13 @@
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-import axios from "axios";
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import anilistApi from '../../utils/anilistApi';
 
 const query = `
     query ($ids: [Int]) {
       Page(perPage: 50) {
         media(id_in: $ids, type: ANIME) {
           id
-          title { romaji }
+                    title { english native romaji }
+                    synonyms
           coverImage { large }
           description
           averageScore
@@ -19,24 +20,15 @@ const query = `
 `;
 
 export const fetchAnimeDataBatch = createAsyncThunk(
-    'me/fetchAnimeDataBatch',
-    async (ids) => {
-      const response = await axios.post(
-          'https://graphql.anilist.co',
-          {
-            query: query,
-            variables: { ids: ids },
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              Accept: 'application/json',
-            },
-          }
-      );
+  'me/fetchAnimeDataBatch',
+  async (ids) => {
+    const response = await anilistApi.post('', {
+      query: query,
+      variables: { ids: ids },
+    });
 
-      return response.data.data.Page.media;
-    }
+    return response.data.data.Page.media;
+  }
 );
 
 

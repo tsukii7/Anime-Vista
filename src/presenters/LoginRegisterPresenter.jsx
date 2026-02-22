@@ -3,14 +3,15 @@ import { LoginView } from '../views/LoginRegister/LoginView.jsx';
 import { RegisterView } from '../views/LoginRegister/RegisterView.jsx';
 import { useNavigate } from 'react-router';
 import "../styles/LoginRegister.css";
-import { hashUidToNumber } from "../firebase/db.js";
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../firebase/config';
+import { useLanguage } from '../i18n/LanguageContext.jsx';
 
 
 export default function LoginRegisterPresenter() {
     const navigate = useNavigate();
     const [showLogin, setShowLogin] = useState(true);
+    const { t } = useLanguage();
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -29,13 +30,13 @@ export default function LoginRegisterPresenter() {
                         className={showLogin ? 'buttonActive' : 'buttonInactive'}
                         onClick={() => setShowLogin(true)}
                     >
-                        Login
+                        {t('auth.login')}
                     </button>
                     <button
                         className={!showLogin ? 'buttonActive' : 'buttonInactive'}
                         onClick={() => setShowLogin(false)}
                     >
-                        Register
+                        {t('auth.register')}
                     </button>
                 </div>
                 {showLogin ? <LoginView /> : <RegisterView />}

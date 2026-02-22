@@ -5,8 +5,10 @@ import Tags from './components/Tags';
 import Results from './components/Results';
 import SearchInput from './components/SearchInput';
 import Pagination from '../../components/Pagination';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 const SearchView = ({ presenter }) => {
+  const { t } = useLanguage();
   const {
     filters,
     results,
@@ -23,7 +25,7 @@ const SearchView = ({ presenter }) => {
     <div className={styles.container}>
       <div className={styles.searchHeader}>
         <div className={styles.filterGroup}>
-          <label>Search</label>
+          <label>{t('nav.search') || 'Search'}</label>
           <SearchInput
             value={filters.search}
             onChange={(value) => onFilterChange('search', value)}

@@ -38,25 +38,45 @@ const SearchPresenter = () => {
     dispatch(setSearchPage(newPage));
   };
 
+  const fetchPromiseRef = useRef(null);
+  const totalPromiseRef = useRef(null);
+
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       const prev = previousFiltersRef.current;
+      const isInitial = !hasLoadedOnce.current;
 
-      const filtersChanged =
-          JSON.stringify({ ...filters, page: 0 }) !== JSON.stringify({ ...prev, page: 0 });
+      // Filters that affect the TOTAL number of results
+      const totalAffectingKeys = ['search', 'genres', 'season', 'year', 'format', 'status'];
+      const totalFiltersChanged = totalAffectingKeys.some(key => filters[key] !== prev[key]);
 
-      if (!hasLoadedOnce.current || filtersChanged) {
-        dispatch(clearResults());
-        dispatch(setSearchPage(1));
-        dispatch(fetchTotalCount(filters));
-        hasLoadedOnce.current = true;
-        previousFiltersRef.current = filters;
+      // Page changing doesn't affect the total count but requires new results
+      const pageChanged = filters.page !== prev.page;
+
+      // 1. Handle Total Count Fetching
+      if (isInitial || totalFiltersChanged) {
+        if (totalFiltersChanged) {
+          dispatch(clearResults());
+          dispatch(setSearchPage(1));
+        }
+
+        if (totalPromiseRef.current) totalPromiseRef.current.abort();
+        totalPromiseRef.current = dispatch(fetchTotalCount(filters));
       }
 
-      dispatch(fetchSearchResults(filters));
+      // 2. Handle Search Results Fetching
+      if (isInitial || totalFiltersChanged || pageChanged) {
+        if (fetchPromiseRef.current) fetchPromiseRef.current.abort();
+        fetchPromiseRef.current = dispatch(fetchSearchResults(filters));
+      }
+
+      hasLoadedOnce.current = true;
+      previousFiltersRef.current = filters;
     }, 500);
 
-    return () => clearTimeout(debounceTimer);
+    return () => {
+      clearTimeout(debounceTimer);
+    };
   }, [filters, dispatch]);
 
   const presenter = {

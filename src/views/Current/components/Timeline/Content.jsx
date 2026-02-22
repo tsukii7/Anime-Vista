@@ -1,8 +1,8 @@
-import React, { useRef, useEffect }from 'react';
+import React, { useRef, useEffect } from 'react';
 import BriefCard from './BriefCard';
 import style from "../../CurrentView.module.css";
 
-export default function Content({ animeListByDate, onRefsReady}){
+export default function Content({ animeListByDate, onRefsReady }) {
     const refs = useRef([]);
 
     useEffect(() => {
@@ -22,21 +22,21 @@ export default function Content({ animeListByDate, onRefsReady}){
         };
     }, [animeListByDate, onRefsReady]);
 
-    function dailyContentRenderCB(animePerDay, index){
-        return(
+    function dailyContentRenderCB(animePerDay, index) {
+        return (
             <div
-                className= {style ["daily-content"]} 
+                className={style["daily-content"]}
                 key={index}
                 id={"date-" + animePerDay.date}
                 ref={(el) => (refs.current[index] = el)}>
-    
+
                 {animePerDay.animes.map(animeRenderCB)}
-            
+
             </div>
         );
     }
-    function animeRenderCB(anime, index){
-        return(
+    function animeRenderCB(anime, index) {
+        return (
             anime && <BriefCard
                 key={index}
                 image={anime?.coverImage}
@@ -44,13 +44,14 @@ export default function Content({ animeListByDate, onRefsReady}){
                 episode={anime?.episode}
                 time={anime?.airingAt}
                 id={anime?.id}
+                anime={anime?.anime}
             />
         );
     }
 
     return (
-        <div className= {style["content"]}>
-            { animeListByDate.map(dailyContentRenderCB) }
+        <div className={style["content"]}>
+            {animeListByDate.map(dailyContentRenderCB)}
         </div>
     );
 }

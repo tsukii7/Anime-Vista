@@ -9,7 +9,8 @@ import {
   Alert,
   styled
 } from '@mui/material';
-import {updateUserProfile} from "../../../firebase/db.js";
+import { updateUserProfile } from "../../../firebase/db.js";
+import { useLanguage } from '../../../i18n/LanguageContext.jsx';
 
 // 自定义样式组件
 const StyledDialog = styled(Dialog)({
@@ -43,6 +44,7 @@ const StyledButton = styled(Button)({
 });
 
 const EditProfileDialog = ({ open, onClose, userInfo, onProfileUpdate }) => {
+  const { t } = useLanguage();
   const [usernameInput, setUsernameInput] = useState(userInfo?.name || '');
   const [introductionInput, setIntroductionInput] = useState(userInfo?.introduction || '');
   const [error, setError] = useState('');
@@ -86,9 +88,9 @@ const EditProfileDialog = ({ open, onClose, userInfo, onProfileUpdate }) => {
 
   return (
     <StyledDialog
-      open={open} 
-      onClose={onClose} 
-      maxWidth="sm" 
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
       fullWidth
       PaperProps={{
         sx: {
@@ -97,19 +99,19 @@ const EditProfileDialog = ({ open, onClose, userInfo, onProfileUpdate }) => {
         }
       }}
     >
-      <DialogTitle sx={{ 
-        fontSize: '24px', 
+      <DialogTitle sx={{
+        fontSize: '24px',
         fontWeight: 500,
         color: '#333',
         pb: 1
       }}>
-        Edit Profile
+        {t('me.editProfile') || 'Edit Profile'}
       </DialogTitle>
       <DialogContent>
         {error && (
-          <Alert 
-            severity="error" 
-            sx={{ 
+          <Alert
+            severity="error"
+            sx={{
               mb: 2,
               borderRadius: '8px'
             }}
@@ -120,7 +122,7 @@ const EditProfileDialog = ({ open, onClose, userInfo, onProfileUpdate }) => {
         <StyledTextField
           autoFocus
           margin="dense"
-          label="Username"
+          label={t('auth.username') || "Username"}
           type="text"
           fullWidth
           value={usernameInput}
@@ -130,35 +132,35 @@ const EditProfileDialog = ({ open, onClose, userInfo, onProfileUpdate }) => {
         />
         <StyledTextField
           margin="dense"
-          label="Introduction"
+          label={t('me.introductionTitle') || "Introduction"}
           multiline
           rows={4}
           fullWidth
           value={introductionInput}
           onChange={(e) => setIntroductionInput(e.target.value)}
           disabled={loading}
-          placeholder="Tell us about yourself!"
+          placeholder={t('me.introduction') || "Tell us about yourself!"}
         />
       </DialogContent>
       <DialogActions sx={{ padding: '16px 24px' }}>
-        <StyledButton 
-          onClick={onClose} 
+        <StyledButton
+          onClick={onClose}
           disabled={loading}
-          sx={{ 
+          sx={{
             color: '#65558F',
             '&:hover': {
               backgroundColor: 'rgba(101, 85, 143, 0.04)'
             }
           }}
         >
-          Cancel
+          {t('me.cancel') || 'Cancel'}
         </StyledButton>
-        <StyledButton 
-          onClick={handleSubmit} 
-          disabled={loading} 
+        <StyledButton
+          onClick={handleSubmit}
+          disabled={loading}
           variant="contained"
         >
-          {loading ? 'Saving...' : 'Save'}
+          {loading ? (t('me.saving') || 'Saving...') : (t('me.save') || 'Save')}
         </StyledButton>
       </DialogActions>
     </StyledDialog>

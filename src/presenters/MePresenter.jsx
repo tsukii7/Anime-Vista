@@ -1,10 +1,7 @@
-import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebase/config';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router';
 import MeView from '../views/Me/MeView';
-import {getUserByNumber, listenToUserInfoByNumber} from "../firebase/db.js";
+import { listenToUserInfoByNumber } from "../firebase/db.js";
 import LoadingIndicator from "../components/LoadingIndicator.jsx";
 
 const MePresenter = () => {
@@ -12,7 +9,7 @@ const MePresenter = () => {
   const [userInfo, setUserInfo] = useState(null);
 
   const params = useParams();
-    const userNumber = parseInt(params.userNumber, 10);
+  const userNumber = parseInt(params.userNumber, 10);
 
   useEffect(() => {
     const unsubscribe = listenToUserInfoByNumber(userNumber, (data) => {

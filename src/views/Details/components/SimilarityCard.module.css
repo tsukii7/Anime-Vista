@@ -9,6 +9,7 @@
 .link {
     text-decoration: none;
     color: inherit;
+    cursor: pointer;
 }
 
 .image {
@@ -16,12 +17,20 @@
     aspect-ratio: 3 / 4;
     object-fit: cover;
     border-radius: 8px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+}
+
+.link:hover .image {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    filter: brightness(1.1);
 }
 
 .titleRow {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-top: 4px;
 }
 
 .title {
@@ -32,6 +41,12 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    transition: color 0.3s ease;
+}
+
+.link:hover .title {
+    color: #6a5acd;
+    /* Royal blue/purple to indicate link */
 }
 
 .footer {
@@ -65,4 +80,3 @@
     display: flex;
     align-items: center;
 }
-

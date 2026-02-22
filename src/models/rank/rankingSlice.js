@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import anilistApi from '../../utils/anilistApi';
 
 // GraphQL search
 const RANKING_QUERY = `
@@ -6,9 +7,8 @@ const RANKING_QUERY = `
     Page(page: $page, perPage: $perPage) {
       media(sort: $sort, type: ANIME, genre_not_in: ["hentai"]) {
         id
-        title {
-          romaji
-        }
+                    title { english native romaji }
+                    synonyms
         coverImage {
           large
         }
@@ -23,24 +23,17 @@ const apiURL = 'https://graphql.anilist.co';
 // async action to fetch ranking list
 export const fetchRankingList = createAsyncThunk(
     'ranking/fetchRankingList',
-    async ({ sortType = 'TRENDING_DESC', page = 1 }, thunkAPI) => {
-        const response = await fetch(apiURL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
+    async ({ sortType = 'TRENDING_DESC', page = 1 }, { signal }) => {
+        const response = await anilistApi.post('', {
+            query: RANKING_QUERY,
+            variables: {
+                page,
+                perPage: 15,
+                sort: [sortType],
             },
-            body: JSON.stringify({
-                query: RANKING_QUERY,
-                variables: {
-                    page,
-                    perPage: 15,
-                    sort: [sortType],
-                },
-            }),
-        });
+        }, { signal });
 
-        const data = await response.json();
+        const data = response.data;
         return {
             list: data.data.Page.media,
             page: page,
@@ -82,6 +75,9 @@ const rankingSlice = createSlice({
                 state.totalPages = action.payload.totalPages;
             })
             .addCase(fetchRankingList.rejected, (state, action) => {
+                if (action.error.name === 'AbortError' || action.meta.aborted) {
+                    return;
+                }
                 state.status = 'failed';
                 state.error = action.error.message;
             });

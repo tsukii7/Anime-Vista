@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { signInWithGoogle, signInWithEmail, forgetPassword } from '../../models/authentication/loginSlice';
 import { FcGoogle } from 'react-icons/fc';
+import { useLanguage } from '../../i18n/LanguageContext';
 import "../../styles/LoginRegister.css";
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
 export function LoginView() {
     const dispatch = useDispatch();
+    const { t } = useLanguage();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [alertMessage, setAlertMessage] = useState('');
@@ -63,13 +65,13 @@ export function LoginView() {
     return (
         <div className="form">
             <div className="input-form">
-                <div className="input-hint">Email</div>
+                <div className="input-hint">{t('auth.email')}</div>
                 <input
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="input-field"
                 />
-                <div className="input-hint">Password</div>
+                <div className="input-hint">{t('auth.password')}</div>
                 <input
                     type="password"
                     value={password}
@@ -79,16 +81,16 @@ export function LoginView() {
             </div>
 
             <div className="button-form">
-                <button onClick={handleLogin} className="email-login">Login</button>
+                <button onClick={handleLogin} className="email-login">{t('auth.login')}</button>
 
                 <button onClick={() => dispatch(signInWithGoogle())} className="google-login">
                     <FcGoogle size={20} />
-                    Login with Google
+                    {t('auth.loginWithGoogle')}
                 </button>
             </div>
 
             <button onClick={handleForgetPassword} className="forgot-password">
-                Forgot password?
+                {t('auth.forgotPassword')}
             </button>
 
             <Snackbar

@@ -6,22 +6,22 @@ import Pagination from "../../components/Pagination";
 import CurrentListView from "./CurrentListView";
 import LoadingIndicator from "../../components/LoadingIndicator";
 
-export default function CurrentView({seasonAnime, animeListByDate, timePointPositions, onRefsReady,
-    currentPage, totalPages, status, onPageChange, viewOption, setViewOption, currentViewStatus}) {
+export default function CurrentView({ seasonAnime, animeListByDate, timePointPositions, onRefsReady,
+    currentPage, totalPages, status, onPageChange, viewOption, setViewOption, currentViewStatus, error }) {
 
 
     return (
         <div className={styles["current-view"]}>
             <div className={styles["current-view-topbar"]}>
-                <SeasonTitle/>
+                <SeasonTitle />
                 <Switcher
                     setViewOption={setViewOption}
-                    viewOption={viewOption}/>
+                    viewOption={viewOption} />
             </div>
-            {currentViewStatus === 'loading' && (<LoadingIndicator/>)}
+            {currentViewStatus === 'loading' && (<LoadingIndicator />)}
             {currentViewStatus === 'failed' && (
                 <div className={styles["error-message"]}>
-                    <LoadingIndicator isLoading={false} hasError={true}/>
+                    <LoadingIndicator isLoading={false} hasError={true} text={error} />
                 </div>
             )}
             {status === 'succeeded' && (
@@ -42,7 +42,7 @@ export default function CurrentView({seasonAnime, animeListByDate, timePointPosi
                     <Pagination
                         totalPages={totalPages}
                         currentPage={currentPage}
-                        onPageChange={onPageChange}/>
+                        onPageChange={onPageChange} />
                 </div>
             )}
         </div>

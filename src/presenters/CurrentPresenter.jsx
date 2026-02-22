@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import CurrentView from "../views/Current/CurrentView.jsx";
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -20,6 +20,7 @@ export default function CurrentPresenter() {
     const {
         groupedAnime,
         status: timelineStatus,
+        error: timelineError,
         currentPage: timelineCurrentPage,
         totalPages: timelineTotalPages
     } = useSelector((state) => state.timeline);
@@ -27,32 +28,53 @@ export default function CurrentPresenter() {
     const {
         seasonAnime,
         status: listStatus,
+        error: listError,
         currentPage: listCurrentPage,
         totalPages: listTotalPages
     } = useSelector((state) => state.list);
 
     const isTimeline = viewOption === 'Timeline';
     const currentStatus = isTimeline ? timelineStatus : listStatus;
+    const currentError = isTimeline ? timelineError : listError;
     const currentPage = isTimeline ? timelineCurrentPage : listCurrentPage;
     const totalPages = isTimeline ? timelineTotalPages : listTotalPages;
     const setPage = isTimeline ? setTimelinePage : setListPage;
 
-    useEffect(() => {
-        dispatch(setPage(1));
+    const timelinePromiseRef = useRef(null);
+    const listPromiseRef = useRef(null);
+    const countPromiseRef = useRef(null);
+    const hasTimelineLoaded = useRef(false);
+    const lastListPageFetched = useRef(null);
 
+    useEffect(() => {
         if (isTimeline) {
-            dispatch(fetchAnimeTimeLine());
+            if (!hasTimelineLoaded.current) {
+                if (timelinePromiseRef.current) timelinePromiseRef.current.abort();
+                timelinePromiseRef.current = dispatch(fetchAnimeTimeLine());
+                hasTimelineLoaded.current = true;
+            }
         } else {
-            dispatch(fetchSeasonTotalCount());
-            dispatch(fetchAnimeList({ page: 1 }));
-        }
-    }, [viewOption, dispatch]);
+            // Season List View
+            const needsCount = listTotalPages === 1; // Initial state
+            if (needsCount) {
+                if (countPromiseRef.current) countPromiseRef.current.abort();
+                countPromiseRef.current = dispatch(fetchSeasonTotalCount());
+            }
 
-    useEffect(() => {
-        if (!isTimeline) {
-            dispatch(fetchAnimeList({ page: currentPage }));
+            if (lastListPageFetched.current !== currentPage || listStatus === 'idle') {
+                if (listPromiseRef.current) listPromiseRef.current.abort();
+                listPromiseRef.current = dispatch(fetchAnimeList({ page: currentPage }));
+                lastListPageFetched.current = currentPage;
+            }
         }
-    }, [currentPage, isTimeline, dispatch]);
+
+        return () => {
+            // Optional: abort everything on unmount
+            // timelinePromiseRef.current?.abort();
+            // listPromiseRef.current?.abort();
+            // countPromiseRef.current?.abort();
+        };
+    }, [viewOption, currentPage, dispatch, isTimeline]);
 
     useEffect(() => {
         if (isTimeline && groupedAnime?.length > 0) {
@@ -83,6 +105,7 @@ export default function CurrentPresenter() {
             viewOption={viewOption}
             setViewOption={setViewOption}
             currentViewStatus={currentStatus}
+            error={currentError}
         />
     );
 }

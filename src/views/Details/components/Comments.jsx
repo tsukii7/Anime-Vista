@@ -3,17 +3,19 @@ import styles from './Comments.module.css';
 import CommentCard from './CommentCard';
 import { addComment } from "../../../firebase/db.js";
 import { getCurrentUser } from "../../../firebase/auth.js";
+import { useLanguage } from '../../../i18n/LanguageContext.jsx';
 
 const Comments = ({ animeId, comments }) => {
     const { userInfo, comments: commentList } = comments;
     const [input, setInput] = useState('');
     const [visibleCount, setVisibleCount] = useState(5);
     const bottomRef = useRef(null);
+    const { t } = useLanguage();
 
     const handleSendACB = () => {
         if (!userInfo.isLogin) return;
         if (!input.trim()) return;
-        addComment(getCurrentUser().userId, animeId, input).then(r => setInput(''))
+        addComment(getCurrentUser().userId, animeId, input).then(() => setInput(''))
     };
 
     // 加载更多评论
@@ -54,14 +56,14 @@ const Comments = ({ animeId, comments }) => {
 
     return (
         <div className={styles.container}>
-            <h2 className={styles.title}>Comment</h2>
+            <h2 className={styles.title}>{t('details.comment') || 'Comment'}</h2>
             <hr className={styles.divider} />
 
             <div className={styles.inputBox}>
                 <textarea
                     disabled={!userInfo.isLogin}
                     placeholder={
-                        userInfo.isLogin ? 'Write a comment...' : 'Please login to comment'
+                        userInfo.isLogin ? (t('details.writeComment') || 'Write a comment...') : (t('details.loginToComment') || 'Please login to comment')
                     }
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
@@ -72,7 +74,7 @@ const Comments = ({ animeId, comments }) => {
                     disabled={!userInfo.isLogin || !input.trim()}
                     onClick={handleSendACB}
                 >
-                    Send
+                    {t('details.send') || 'Send'}
                 </button>
             </div>
 

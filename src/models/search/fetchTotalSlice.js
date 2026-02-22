@@ -1,11 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-
-const API_URL = 'https://graphql.anilist.co';
+import anilistApi from '../../utils/anilistApi';
 
 export const fetchTotalCount = createAsyncThunk(
-    'searchResults/fetchTotalCount',
-    async (filters) => {
-        const query = `
+  'searchResults/fetchTotalCount',
+  async (filters, { signal }) => {
+    const query = `
       query ($search: String, $genres: [String], $year: Int, $season: MediaSeason, $format: MediaFormat, $status: MediaStatus, $page: Int, $perPage: Int) {
         Page(page: $page, perPage: $perPage) {
           pageInfo {
@@ -22,53 +21,49 @@ export const fetchTotalCount = createAsyncThunk(
       }
     `;
 
-        const variablesBase = {
-            search: filters.search || null,
-            genres: filters.genres ? [filters.genres] : null,
-            year: filters.year || null,
-            season: filters.season || null,
-            format: filters.format || null,
-            status: filters.status || null,
-        };
+    const variablesBase = {
+      search: filters.search || null,
+      genres: filters.genres ? [filters.genres] : null,
+      year: filters.year || null,
+      season: filters.season || null,
+      format: filters.format || null,
+      status: filters.status || null,
+    };
 
-        // 删除空值字段
-        Object.keys(variablesBase).forEach(
-            (key) => variablesBase[key] === null && delete variablesBase[key]
-        );
+    // 删除空值字段
+    Object.keys(variablesBase).forEach(
+      (key) => variablesBase[key] === null && delete variablesBase[key]
+    );
 
-        let totalIds = [];
-        let page = 1;
-        const perPage = 50;
-        let hasNextPage = true;
+    let totalIds = [];
+    let page = 1;
+    const perPage = 50;
+    let hasNextPage = true;
 
-        while (hasNextPage) {
-            const variables = { ...variablesBase, page, perPage };
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                },
-                body: JSON.stringify({
-                    query,
-                    variables,
-                }),
-            });
+    while (hasNextPage && !signal.aborted) {
+      try {
+        const variables = { ...variablesBase, page, perPage };
+        const response = await anilistApi.post('', {
+          query,
+          variables,
+        }, { signal });
 
-            if (!response.ok) {
-                throw new Error('Failed to fetch data');
-            }
+        const data = response.data;
+        const media = data?.data?.Page?.media ?? [];
+        const pageInfo = data?.data?.Page?.pageInfo;
 
-            const data = await response.json();
-            const media = data?.data?.Page?.media ?? [];
-            const pageInfo = data?.data?.Page?.pageInfo;
-
-            totalIds = totalIds.concat(media.map((m) => m?.id));
-            hasNextPage = pageInfo?.hasNextPage;
-            page++;
-            if (page > 3) break;
+        totalIds = totalIds.concat(media.map((m) => m?.id));
+        hasNextPage = pageInfo?.hasNextPage;
+        page++;
+        if (page > 3) break;
+      } catch (error) {
+        if (error.name === 'AbortError' || error.message === 'canceled') {
+          return totalIds.length;
         }
-
-        return totalIds.length;
+        throw error;
+      }
     }
+
+    return totalIds.length;
+  }
 );

@@ -16,7 +16,7 @@ import {
 import { db, auth } from "./config.js"
 import { getCurrentUser } from "./auth.js";
 import { onAuthStateChanged } from "firebase/auth";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { fetchAnimeDataBatch, setActivitiesTotalPages } from "../models/me/meSlice.js";
 
 function formatDate(date) {
@@ -242,7 +242,7 @@ function listenToUserInfoByNumber(userNumber, onData) {
     return unsubscribe;
 }
 
-function listenToUserActivities(userId, currentPage, itemsPerPage, dispatch, callback) {
+function listenToUserActivities(userId, currentPage, itemsPerPage, dispatch, callback, onError) {
     const commentsRef = collection(db, 'comments');
     const q = query(commentsRef, where('userId', '==', userId));
 
@@ -267,6 +267,14 @@ function listenToUserActivities(userId, currentPage, itemsPerPage, dispatch, cal
 
             const animeIds = Array.from(new Set(comments.map(c => c.animeId)));
             const animeListResult = await dispatch(fetchAnimeDataBatch(animeIds));
+
+            // Handle Redux Thunk error
+            if (animeListResult.error) {
+                console.error('Error in listenToUserActivities dispatch:', animeListResult.error);
+                if (onError) onError(animeListResult.error.message);
+                return;
+            }
+
             const animeList = animeListResult?.payload;
             const animeMap = Object.fromEntries(animeList.map(media => [media.id, media]));
 
@@ -284,9 +292,7 @@ function listenToUserActivities(userId, currentPage, itemsPerPage, dispatch, cal
                         }).replace(/\//g, '.'),
                         timestamp: comment.timestamp.toDate(),
                         commentText: comment.text,
-                        animeImage: anime.coverImage.large,
-                        animeTitle: anime.title.romaji,
-                        animeScore: (anime.averageScore / 10).toFixed(1),
+                        anime: anime,
                         likeCount: String(comment.likedUsers?.length || 0),
                         animeId: anime.id,
                         hasLiked: comment.likedUsers?.includes(userId) || false
@@ -303,6 +309,9 @@ function listenToUserActivities(userId, currentPage, itemsPerPage, dispatch, cal
             const end = start + itemsPerPage;
 
             callback(activities.slice(start, end));
+        } catch (error) {
+            console.error('Error in listenToUserActivities:', error);
+            if (onError) onError(error.message);
         } finally {
             loadingSnapshot = false;
         }

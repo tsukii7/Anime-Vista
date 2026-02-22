@@ -5,12 +5,15 @@ import FilterAltRoundedIcon from '@mui/icons-material/FilterAltRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import { useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
-import {clearFilters, updateFilter} from "../../models/search/filterSlice.js";
+import { clearFilters, updateFilter } from "../../models/search/filterSlice.js";
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
-const SearchBar = ({ placeholder = 'Search anime...' }) => {
+const SearchBar = () => {
     const [keyword, setKeyword] = useState('');
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const { t } = useLanguage();
+    const placeholder = t('search.placeholder');
 
     const handleSearch = () => {
         if (!keyword.trim()) return;
@@ -34,7 +37,7 @@ const SearchBar = ({ placeholder = 'Search anime...' }) => {
                 }}
             />
             <button className="search-button" onClick={handleSearch}>
-                <SearchRoundedIcon className={'search-icon'}/>
+                <SearchRoundedIcon className={'search-icon'} />
             </button>
         </div>
     );

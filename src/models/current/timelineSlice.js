@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import anilistApi from '../../utils/anilistApi';
 
 export function getCurrentSeason() {
     const year = new Date().getFullYear();
@@ -13,8 +13,8 @@ export function getCurrentSeason() {
 export function findMaxDate(animeList) {
     let maxDate = new Date(0);
     for (const anime of animeList) {
-        if (!anime?.airingSchedule || !anime?.airingSchedule.edges) continue;
-        for (const edge of anime?.airingSchedule.edges) {
+        if (!anime?.airingSchedule || !anime?.airingSchedule?.edges) continue;
+        for (const edge of anime.airingSchedule.edges) {
             const airingDate = new Date(edge.node.airingAt * 1000);
             if (airingDate > maxDate) {
                 maxDate = airingDate;
@@ -26,8 +26,8 @@ export function findMaxDate(animeList) {
 
 export const fetchAnimeTimeLine = createAsyncThunk(
     'timeline/fetchAnimeTimeLine',
-    async ({page=1,perPage=50}={}) => {
-        const {year, season} = getCurrentSeason();
+    async ({ page = 1, perPage = 50 } = {}, { signal }) => {
+        const { year, season } = getCurrentSeason();
 
         const query = `
         query($page: Int, $perPage: Int) {
@@ -40,9 +40,8 @@ export const fetchAnimeTimeLine = createAsyncThunk(
                 }
                 media(season: ${season.toUpperCase()}, seasonYear: ${year}, type: ANIME, genre_not_in: ["hentai"]) {
                     id
-                    title {
-                        romaji
-                    }
+                    title { english native romaji }
+                    synonyms
                     coverImage {
                         large
                     }
@@ -54,9 +53,9 @@ export const fetchAnimeTimeLine = createAsyncThunk(
                                 episode
                                 mediaId
                                 media {
-                                    title {
-                                        romaji
-                                    }
+                                    id
+                                    title { english native romaji }
+                                    synonyms
                                     episodes
                                 }
                             }
@@ -68,12 +67,13 @@ export const fetchAnimeTimeLine = createAsyncThunk(
     `;
         let allAnime = [];
 
-        try{
+        try {
             for (let page = 1; page <= 2; page++) {
-                const response = await axios.post('https://graphql.anilist.co', {
-                query,
-                variables: { page, perPage },
-                });
+                if (signal.aborted) break;
+                const response = await anilistApi.post('', {
+                    query,
+                    variables: { page, perPage },
+                }, { signal });
 
                 const media = response.data.data.Page.media;
                 const hasNextPage = response.data.data.Page.pageInfo.hasNextPage;
@@ -89,7 +89,7 @@ export const fetchAnimeTimeLine = createAsyncThunk(
                 currentPage: page,
                 totalPages: Math.ceil(seasonAnimeList.length / 15),
             };
-        }catch (error) {
+        } catch (error) {
             console.error('Error fetching anime timeline:', error);
             throw error;
         }
@@ -101,8 +101,8 @@ export function groupAnimeByDate(animeList, maxDate) {
     const animeByDate = {};
 
     for (const anime of animeList) {
-        if (!anime?.airingSchedule || !anime?.airingSchedule.edges) continue;
-        for (const edge of anime?.airingSchedule.edges) {
+        if (!anime?.airingSchedule || !anime?.airingSchedule?.edges) continue;
+        for (const edge of anime.airingSchedule.edges) {
             const airingDate = new Date(edge.node.airingAt * 1000);
             if (airingDate >= today && airingDate <= maxDate) {
                 const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -121,9 +121,10 @@ export function groupAnimeByDate(animeList, maxDate) {
                 }
 
                 animeByDate[dateKey].animes.push({
-                    title: anime?.title.romaji,
-                    coverImage: anime?.coverImage.large,
-                    episode: edge.node.episode,
+                    title: anime?.title, // Store title object
+                    anime: anime,
+                    coverImage: anime?.coverImage?.large,
+                    episode: edge?.node?.episode,
                     id: anime?.id,
                     airingAt: airingDate.toLocaleTimeString('en-US', {
                         hour: '2-digit',
@@ -136,7 +137,7 @@ export function groupAnimeByDate(animeList, maxDate) {
         }
     }
 
-        Object.values(animeByDate).forEach(day => {
+    Object.values(animeByDate).forEach(day => {
         day.animes.sort((a, b) => a.airingAtValue - b.airingAtValue);
     });
 
@@ -144,8 +145,8 @@ export function groupAnimeByDate(animeList, maxDate) {
 }
 
 const timelineSlice = createSlice({
-    name:"timeline",
-    initialState:{
+    name: "timeline",
+    initialState: {
         seasonAnime: [],
         groupedAnime: [],
         status: 'idle',
@@ -171,6 +172,9 @@ const timelineSlice = createSlice({
                 state.totalPages = action.payload.totalPages;
             })
             .addCase(fetchAnimeTimeLine.rejected, (state, action) => {
+                if (action.error.name === 'AbortError' || action.meta.aborted) {
+                    return;
+                }
                 state.status = 'failed';
                 state.error = action.error.message;
             });

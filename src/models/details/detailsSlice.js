@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import anilistApi from '../../utils/anilistApi';
 
 const DETAILS_QUERY = `
 query ($id: Int) {
@@ -99,7 +99,10 @@ query ($id: Int) {
                     id
                     title {
                         romaji
+                        english
+                        native
                     }
+                    synonyms
                     coverImage {
                         large
                     }
@@ -115,24 +118,71 @@ query ($id: Int) {
 }
 `;
 
+const LOCALIZED_TITLES_QUERY = `
+query ($ids: [Int]) {
+    Page(page: 1, perPage: 50) {
+        media(id_in: $ids, type: ANIME) {
+            id
+            title {
+                romaji
+                english
+                native
+            }
+            synonyms
+        }
+    }
+}
+`;
+
 export const fetchAnimeDetails = createAsyncThunk(
     'details/fetchAnimeDetails',
-    async (id) => {
-        const response = await axios.post(
-            'https://graphql.anilist.co',
-            {
-                query: DETAILS_QUERY,
-                variables: { id: Number(id) },
-            },
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                },
-            }
-        );
+    async (id, { signal }) => {
+        // Step 1: Fetch main anime details
+        const response = await anilistApi.post('', {
+            query: DETAILS_QUERY,
+            variables: { id: Number(id) },
+        }, { signal });
 
-        return response.data.data.Media;
+        const anime = response.data.data.Media;
+
+        // Step 2: Perform secondary fetch for recommendation titles to trigger proxy localization
+        const recommendationIds = anime?.recommendations?.nodes
+            ?.map(node => node.mediaRecommendation?.id)
+            .filter(Boolean) || [];
+
+        if (recommendationIds.length > 0 && !signal.aborted) {
+            try {
+                const localizedResponse = await anilistApi.post('', {
+                    query: LOCALIZED_TITLES_QUERY,
+                    variables: { ids: recommendationIds },
+                }, { signal });
+
+                const localizedMediaMap = {};
+                localizedResponse.data.data.Page.media.forEach(m => {
+                    localizedMediaMap[m.id] = m;
+                });
+
+                // Merge localized titles/synonyms back into the recommendation nodes
+                anime.recommendations.nodes = anime.recommendations.nodes.map(node => {
+                    const media = node.mediaRecommendation;
+                    if (media && localizedMediaMap[media.id]) {
+                        return {
+                            ...node,
+                            mediaRecommendation: {
+                                ...media,
+                                title: localizedMediaMap[media.id].title,
+                                synonyms: localizedMediaMap[media.id].synonyms
+                            }
+                        };
+                    }
+                    return node;
+                });
+            } catch (error) {
+                console.error('[DetailsSlice] Failed to fetch localized recommendation titles:', error);
+            }
+        }
+
+        return anime;
     }
 );
 
@@ -154,6 +204,9 @@ const detailsSlice = createSlice({
                 state.anime = action.payload;
             })
             .addCase(fetchAnimeDetails.rejected, (state, action) => {
+                if (action.error.name === 'AbortError' || action.meta.aborted) {
+                    return;
+                }
                 state.status = 'failed';
                 state.error = action.error.message;
             });

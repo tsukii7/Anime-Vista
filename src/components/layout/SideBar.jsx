@@ -8,11 +8,12 @@ import Inventory2RoundedIcon from '@mui/icons-material/Inventory2Rounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import SignalCellularAltRoundedIcon from '@mui/icons-material/SignalCellularAltRounded';
 import GroupsRoundedIcon from '@mui/icons-material/GroupsRounded';
-import {clearFilters} from "../../models/search/filterSlice.js";
+import { clearFilters } from "../../models/search/filterSlice.js";
 import { useDispatch } from 'react-redux';
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 const SideBar = () => {
-
+    const { t } = useLanguage();
     const dispatch = useDispatch();
     const handleSearch = () => {
         dispatch(clearFilters());
@@ -22,23 +23,23 @@ const SideBar = () => {
         <nav className="sidebar">
             <NavLink to="/" className="nav-item">
                 <HomeRoundedIcon className="nav-icon" />
-                <span>Home</span>
+                <span>{t('nav.home')}</span>
             </NavLink>
             <NavLink to="/current" className="nav-item">
                 <Inventory2RoundedIcon className="nav-icon" />
-                <span>Current</span>
+                <span>{t('nav.current')}</span>
             </NavLink>
             <NavLink to="/search" className="nav-item" onClick={handleSearch}>
                 <SearchRoundedIcon className="nav-icon" />
-                <span>Search</span>
+                <span>{t('nav.search')}</span>
             </NavLink>
             <NavLink to="/rank" className="nav-item">
                 <SignalCellularAltRoundedIcon className="nav-icon" />
-                <span>Rank</span>
+                <span>{t('nav.rank')}</span>
             </NavLink>
             <NavLink to="/about" className="nav-item">
                 <GroupsRoundedIcon className="nav-icon" />
-                <span>About</span>
+                <span>{t('nav.about')}</span>
             </NavLink>
         </nav>
     );

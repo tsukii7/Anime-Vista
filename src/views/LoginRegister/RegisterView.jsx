@@ -4,10 +4,11 @@ import { register } from '../../models/authentication/loginSlice';
 import "../../styles/LoginRegister.css";
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
-import { useNavigate } from "react-router";
+import { useLanguage } from '../../i18n/LanguageContext';
 
 export function RegisterView() {
     const dispatch = useDispatch();
+    const { t } = useLanguage();
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -16,7 +17,6 @@ export function RegisterView() {
     const [alertMessage, setAlertMessage] = useState('');
     const [alertSeverity, setAlertSeverity] = useState('error'); // 'error' | 'success'
     const [openAlert, setOpenAlert] = useState(false);
-    const navigate = useNavigate();
     const showAlert = (message, severity = 'error') => {
         setAlertMessage(message);
         setAlertSeverity(severity);
@@ -77,17 +77,17 @@ export function RegisterView() {
     return (
         <div className="form">
             <div className="input-form">
-                <div className="input-hint">Username</div>
+                <div className="input-hint">{t('auth.username') || 'Username'}</div>
                 <input value={username} className="input-field" onChange={(e) => setUsername(e.target.value)} />
-                <div className="input-hint">Email</div>
+                <div className="input-hint">{t('auth.email')}</div>
                 <input value={email} className="input-field" onChange={(e) => setEmail(e.target.value)} />
-                <div className="input-hint">Password</div>
+                <div className="input-hint">{t('auth.password')}</div>
                 <input type="password" value={password} className="input-field" onChange={(e) => setPassword(e.target.value)} />
-                <div className="input-hint">Confirm Password</div>
+                <div className="input-hint">{t('auth.confirmPassword') || 'Confirm Password'}</div>
                 <input type="password" value={confirmPassword} className="input-field" onChange={(e) => setConfirmPassword(e.target.value)} />
             </div>
             <div className="button-form">
-                <button onClick={handleRegister} className="email-login">Register</button>
+                <button onClick={handleRegister} className="email-login">{t('auth.register')}</button>
             </div>
 
             <Snackbar

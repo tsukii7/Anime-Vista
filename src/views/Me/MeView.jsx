@@ -10,8 +10,10 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import EditIcon from '@mui/icons-material/Edit';
 import { getCurrentUser } from "../../firebase/auth.js";
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 const MeView = ({ userInfo, activeTab = 'favorites', onTabChange }) => {
+  const { t } = useLanguage();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -47,9 +49,7 @@ const MeView = ({ userInfo, activeTab = 'favorites', onTabChange }) => {
           <div className={styles.editIconContainer}>
             <EditIcon fontSize="small" />
           </div>
-          <div style={{ width: 36, textAlign: 'center' }}>
-            <span className={styles.editText}>Edit</span>
-          </div>
+          <span className={styles.editText}>{t('me.edit') || 'Edit'}</span>
         </div>
       }
 
@@ -67,7 +67,7 @@ const MeView = ({ userInfo, activeTab = 'favorites', onTabChange }) => {
           </span>
           <span className={styles.userDetails}>
             ID: {hashUidToNumber(userInfo.userId)} <br /><br />
-            {userInfo.introduction || "Introduce about yourself!"}
+            {userInfo.introduction || (t('me.introduction') || "Introduce about yourself!")}
           </span>
         </div>
       </div>
@@ -79,14 +79,16 @@ const MeView = ({ userInfo, activeTab = 'favorites', onTabChange }) => {
             className={`${styles.tabItem} ${activeTab === 'favorites' ? styles.activeTab : styles.inactiveTab}`}
             onClick={() => handleTabChange('favorites')}
           >
-            Favorites
+            <div className={styles.tabLabel}>{t('me.favorites') || 'Favorites'}</div>
+            {activeTab === 'favorites' && <div className={styles.tabUnderline}></div>}
           </button>
 
           <button
             className={`${styles.tabItem} ${activeTab === 'activities' ? styles.activeTab : styles.inactiveTab}`}
             onClick={() => handleTabChange('activities')}
           >
-            Activities
+            <div className={styles.tabLabel}>{t('me.activities') || 'Activities'}</div>
+            {activeTab === 'activities' && <div className={styles.tabUnderline}></div>}
           </button>
         </div>
         <div className={styles.dividerLine} />
@@ -113,7 +115,7 @@ const MeView = ({ userInfo, activeTab = 'favorites', onTabChange }) => {
           severity="success"
           sx={{ width: '100%' }}
         >
-          Profile updated successfully!
+          {t('me.profileUpdated') || 'Profile updated successfully!'}
         </Alert>
       </Snackbar>
     </div>

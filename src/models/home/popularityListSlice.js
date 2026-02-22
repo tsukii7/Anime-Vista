@@ -1,16 +1,17 @@
 // models/home/popularityListSlice.js
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
+import anilistApi from '../../utils/anilistApi';
 
 export const fetchPopularityList = createAsyncThunk(
     'popularity/fetchList',
-    async ({ page = 1 } = {}) => {
+    async ({ page = 1 } = {}, { signal }) => {
         const query = `
         query ($page: Int, $perPage: Int) {
             Page(page: $page, perPage: $perPage) {
                 media(type: ANIME, sort: TRENDING_DESC, genre_not_in: ["hentai"]) {
                     id
-                    title { romaji }
+                    title { english native romaji }
+                    synonyms
                     coverImage { large }
                     startDate { year month day }
                     description
@@ -24,17 +25,10 @@ export const fetchPopularityList = createAsyncThunk(
             }
         }`;
 
-        const apiURL = 'https://graphql.anilist.co';
-
-        const response = await axios.post(apiURL, {
+        const response = await anilistApi.post('', {
             query,
             variables: { page, perPage: 10 }
-        }, {
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json'
-            }
-        });
+        }, { signal });
 
         return {
             media: response.data.data.Page.media,
@@ -70,6 +64,9 @@ const popularityListSlice = createSlice({
                 state.totalPages = action.payload.totalPages;
             })
             .addCase(fetchPopularityList.rejected, (state, action) => {
+                if (action.error.name === 'AbortError' || action.meta.aborted) {
+                    return;
+                }
                 state.status = 'failed';
                 state.error = action.error.message;
             });

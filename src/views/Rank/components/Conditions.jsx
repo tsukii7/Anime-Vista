@@ -3,16 +3,18 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSortType, fetchRankingList } from '../../../models/rank/rankingSlice';
 import styles from '../RankView.module.css';
-
-const SORT_OPTIONS = [
-    { label: 'Trending', value: 'TRENDING_DESC' },
-    { label: 'Rating', value: 'SCORE_DESC' },
-    { label: 'Most Popular', value: 'POPULARITY_DESC' },
-];
+import { useLanguage } from '../../../i18n/LanguageContext.jsx';
 
 const Condition = () => {
     const dispatch = useDispatch();
+    const { t } = useLanguage();
     const selectedSort = useSelector((state) => state.ranking.sortType);
+
+    const SORT_OPTIONS = [
+        { label: t('rank.trending') || 'Trending', value: 'TRENDING_DESC' },
+        { label: t('rank.score') || 'Rating', value: 'SCORE_DESC' },
+        { label: t('rank.popular') || 'Most Popular', value: 'POPULARITY_DESC' },
+    ];
 
     const handleClick = (sortType) => {
         dispatch(setSortType(sortType));

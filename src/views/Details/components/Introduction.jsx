@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './Introduction.module.css';
 import '../../../styles/global.css';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import {addFavorite, removeFavorite} from "../../../firebase/db.js";
-import {getCurrentUser} from "../../../firebase/auth.js";
 import FavoriteBtn from "../../../components/FavoriteBtn.jsx";
+import { useLanguage } from '../../../i18n/LanguageContext.jsx';
+import { translateToChinese } from '../../../utils/translateText.js';
+import { getDisplayTitle, standardizeDescription, prepareDescriptionForTranslation, finalizeDescriptionAfterTranslation } from '../../../utils/animeUtils.js';
+import TranslatedTag from '../../../components/TranslatedTag.jsx';
 
-const Introduction = ({introduction}) => {
+const Introduction = ({ introduction, anime }) => {
+    const { t, lang } = useLanguage();
     const {
         id,
         title,
@@ -21,31 +24,43 @@ const Introduction = ({introduction}) => {
         tags,
     } = introduction;
 
-    async function handleFavoriteClickACB(event) {
-        event.preventDefault();
+    const [translatedDesc, setTranslatedDesc] = useState(description);
+    const [isTranslating, setIsTranslating] = useState(false);
 
-        if (isFavorite) {
-            await removeFavorite(getCurrentUser().userId, id)
+    useEffect(() => {
+        if (lang === 'zh') {
+            if (description) {
+                setIsTranslating(true);
+                const { text } = prepareDescriptionForTranslation(description, anime);
+                translateToChinese(text).then((res) => {
+                    const final = finalizeDescriptionAfterTranslation(res, anime, lang);
+                    setTranslatedDesc(final);
+                    setIsTranslating(false);
+                });
+            }
         } else {
-            await addFavorite(getCurrentUser().userId, id)
+            const standardized = standardizeDescription(description, anime, lang);
+            setTranslatedDesc(standardized);
         }
-    }
+    }, [lang, description, anime]);
 
     function tagCB(tag, index) {
         return (
-            <span key={index} className={styles.tag}>
-                {tag}
-            </span>
-        )
+            <TranslatedTag
+                key={index}
+                tag={tag}
+                className={styles.tag}
+            />
+        );
     }
 
     function statusString() {
-        if(!Number.isFinite(nextEpisode)) return '';
-        if(nextEpisode <= 0) return '';
+        if (!Number.isFinite(nextEpisode)) return '';
+        if (nextEpisode <= 0) return '';
 
-        if (nextEpisode === 1) return 'No episode available';
+        if (nextEpisode === 1) return t('details.airing') || 'No episode available';
 
-        return `Update to ${nextEpisode - 1} episode`;
+        return `${t('details.airing') || 'Update to '} ${nextEpisode - 1} ${t('details.episodes') || 'episode'}`;
     }
 
     return (
@@ -56,30 +71,35 @@ const Introduction = ({introduction}) => {
                     <p className={styles.altTitle}>{altTitle}</p>
                 </div>
                 <div className={styles.heartBtn}>
-                    <FavoriteBtn isFavorite={isFavorite} id={id} className={styles.favoriteBtn}/>
-                    <span className={styles.favoriteText}>Add to my favorite</span>
+                    <FavoriteBtn isFavorite={isFavorite} id={id} className={styles.favoriteBtn} />
+                    <span className={styles.favoriteText}>{isFavorite ? (t('details.favorited') || 'Favorited') : (t('details.addToFavorites') || 'Add to my favorite')}</span>
                 </div>
             </div>
 
             <div className={styles.content}>
-                <img className={styles.cover} src={coverImage} alt="anime visual"/>
+                <img className={styles.cover} src={coverImage} alt="anime visual" />
                 <div className={styles.details}>
                     <p className={styles.statusLine}>
                         <span className={styles.statusLineIn}>
-                            {`[Start on ${startDate} / `}
+                            {`[ ${startDate} / `}
                         </span>
                         <span className={styles.statusLineIn}>
-                           {status}
+                            {t(`details.${String(status).toLowerCase()}`) || status}
                         </span>
                         <span className={styles.statusLineIn}>
-                            {(statusString() && ' / ' + statusString())+']'}
+                            {(statusString() && ' / ' + statusString()) + ' ]'}
                         </span>
                     </p>
 
-                    <p className={styles.introduction} dangerouslySetInnerHTML={{ __html: description }} />
+                    <div className={styles.introduction}>
+                        {isTranslating ?
+                            <p style={{ fontStyle: 'italic', opacity: 0.7 }}>{t('common.translating') || 'Translating...'}</p> :
+                            <p dangerouslySetInnerHTML={{ __html: translatedDesc }} />
+                        }
+                    </div>
 
                     <div className={styles.tags}>
-                        {tags.map(tagCB)}
+                        {tags?.map(tagCB)}
                     </div>
                 </div>
             </div>

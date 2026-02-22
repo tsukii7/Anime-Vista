@@ -28,7 +28,14 @@
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0;
+    padding: 4px 8px;
+    transition: all 0.2s ease;
+}
+
+.toggle:hover {
+    text-decoration: underline;
+    background-color: rgba(0, 122, 255, 0.05);
+    border-radius: 4px;
 }
 
 .grid {

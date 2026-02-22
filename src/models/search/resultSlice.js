@@ -1,11 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import {fetchTotalCount} from "./fetchTotalSlice.js";
-
-const API_URL = 'https://graphql.anilist.co';
+import { fetchTotalCount } from "./fetchTotalSlice.js";
+import anilistApi from '../../utils/anilistApi';
 
 export const fetchSearchResults = createAsyncThunk(
   'searchResults/fetch',
-  async (filters) => {
+  async (filters, { signal }) => {
     // 构建GraphQL查询
     const query = `       query ($search: String, $genres: [String], $year: Int, $season: MediaSeason, $format: MediaFormat, $status: MediaStatus, $page: Int, $perPage: Int) {
         Page(page: $page, perPage: $perPage) {
@@ -17,10 +16,8 @@ export const fetchSearchResults = createAsyncThunk(
           }         
           media(search: $search, genre_in: $genres, seasonYear: $year, season: $season, format: $format, type: ANIME, status: $status, sort: [TRENDING_DESC, POPULARITY_DESC], genre_not_in: ["hentai"]) {
             id
-            title {
-              romaji
-              english
-            }
+                    title { english native romaji }
+                    synonyms
             genres
             season
             seasonYear
@@ -49,7 +46,7 @@ export const fetchSearchResults = createAsyncThunk(
     const variables = {
       search: filters.search || null,
       genres: filters.genres ? [filters.genres] : null,
-      year: filters.year || null, 
+      year: filters.year || null,
       season: filters.season || null,
       format: filters.format || null,
       status: filters.status || null,
@@ -58,33 +55,22 @@ export const fetchSearchResults = createAsyncThunk(
     };
 
     // 移除空值，避免发送不必要的参数
-    Object.keys(variables).forEach(key => 
+    Object.keys(variables).forEach(key =>
       variables[key] === null && delete variables[key]
     );
 
     try {
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          query,
-          variables
-        })
-      });
+      const response = await anilistApi.post('', {
+        query,
+        variables
+      }, { signal });
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
+      const data = response.data;
 
-      const data = await response.json();
-      
       if (data.errors) {
         throw new Error(data.errors[0].message);
       }
-      
+
       return {
         results: data.data.Page.media,
         currentPage: data.data.Page.pageInfo.currentPage,
@@ -131,7 +117,10 @@ const resultSlice = createSlice({
         state.results = payload.results;
         state.currentPage = payload.currentPage;
       })
-      .addCase(fetchSearchResults.rejected, (state, { error }) => {
+      .addCase(fetchSearchResults.rejected, (state, { error, meta }) => {
+        if (error.name === 'AbortError' || meta.aborted) {
+          return;
+        }
         state.loading = false;
         state.error = error.message;
       })

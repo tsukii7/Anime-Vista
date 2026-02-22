@@ -1,9 +1,11 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import styles from './Characters.module.css';
 import CharacterCard from './CharacterCard';
 import LoadingIndicator from "../../../components/LoadingIndicator.jsx";
+import { useLanguage } from '../../../i18n/LanguageContext.jsx';
 
-const Characters = ({characters}) => {
+const Characters = ({ characters }) => {
+    const { t } = useLanguage();
     const [showAll, setShowAll] = useState(false);
 
     const displayedCharacters = showAll ? characters : characters.slice(0, 6);
@@ -28,18 +30,18 @@ const Characters = ({characters}) => {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h2 className={styles.title}>Characters</h2>
+                <h2 className={styles.title}>{t('details.characters') || 'Characters'}</h2>
                 <button className={styles.toggle} onClick={handleShowClickACB}>
-                    {characters.length > 6 && (showAll ? 'show less' : 'show more')}
+                    {characters.length > 6 && (showAll ? (t('common.showLess') || 'show less') : (t('common.showMore') || 'show more'))}
                 </button>
             </div>
 
-            <hr className={styles.divider}/>
+            <hr className={styles.divider} />
 
             <div className={styles.grid}>
                 {displayedCharacters.length ?
                     displayedCharacters.map(characterCB) :
-                    <LoadingIndicator isLoading={false} hasError={true} text={'Nothing found...'}/>}
+                    <LoadingIndicator isLoading={false} hasError={true} text={'Nothing found...'} />}
             </div>
         </div>
     );

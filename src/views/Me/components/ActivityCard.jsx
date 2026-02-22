@@ -6,20 +6,25 @@ import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import { likeComment, unlikeComment } from '../../../firebase/db';
 import { getCurrentUser } from '../../../firebase/auth';
 import defaultAvatar from '../../../assets/default-avatar.png'
-const ActivityCard = ({ 
-  userAvatar, 
-  username, 
-  date, 
-  commentText, 
-  animeImage, 
-  animeTitle, 
-  animeScore, 
+import { getDisplayTitle } from '../../../utils/animeUtils';
+import { useLanguage } from '../../../i18n/LanguageContext';
+
+const ActivityCard = ({
+  userAvatar,
+  username,
+  date,
+  commentText,
+  anime,
   likeCount,
   animeId,
   id,
   hasLiked
 }) => {
   const navigate = useNavigate();
+  const { lang } = useLanguage();
+  const animeTitle = getDisplayTitle(anime, lang);
+  const animeImage = anime?.coverImage?.large;
+  const animeScore = (anime?.averageScore / 10).toFixed(1);
 
   const handleAnimeClick = () => {
     navigate(`/details/${animeId}`);
@@ -44,7 +49,7 @@ const ActivityCard = ({
   return (
     <div className={styles.cardWrapper}>
       <div className={styles.cardContainer}>
-        <img className={styles.userAvatar} src={userAvatar?userAvatar:defaultAvatar} alt="User avatar" />
+        <img className={styles.userAvatar} src={userAvatar ? userAvatar : defaultAvatar} alt="User avatar" />
         <div className={styles.contentContainer}>
           <div className={styles.userInfoSection}>
             <div className={styles.headerSection}>
@@ -53,10 +58,10 @@ const ActivityCard = ({
             <div className={styles.dateText}>{date}</div>
           </div>
           <div className={styles.commentText}>{commentText}</div>
-          <div 
+          <div
             className={styles.animeInfoContainer}
           >
-            <img className={styles.animeImage} src={animeImage} alt={animeTitle} onClick={handleAnimeClick}/>
+            <img className={styles.animeImage} src={animeImage} alt={animeTitle} onClick={handleAnimeClick} />
             <div className={styles.animeDetails}>
               <div className={styles.animeTitle} onClick={handleAnimeClick}>{animeTitle}</div>
               <div className={styles.animeScore}>Score {animeScore}</div>

@@ -28,6 +28,10 @@
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+.switcherOption:hover {
+    background-color: rgba(101, 85, 143, 0.08);
+}
+
 .switcherOption.left {
     border-top-left-radius: 100px;
     border-bottom-left-radius: 100px;

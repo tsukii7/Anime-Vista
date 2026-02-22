@@ -1,17 +1,18 @@
-import React, {useEffect, useState} from 'react';
-import {useSelector, useDispatch} from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import ActivityCard from './components/ActivityCard';
 import styles from './MeActivityView.module.css';
 import Pagination from '../../components/Pagination';
-import {setActivitiesPage} from '../../models/me/meSlice';
+import { setActivitiesPage } from '../../models/me/meSlice';
 import LoadingIndicator from "../../components/LoadingIndicator.jsx";
-import {listenToUserActivities} from "../../firebase/db.js";
+import { listenToUserActivities } from "../../firebase/db.js";
 
-const MeActivityView = ({userId}) => {
+const MeActivityView = ({ userId }) => {
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const dispatch = useDispatch();
-    const {currentPage, totalPages, itemsPerPage} = useSelector((state) => state.me.activities);
+    const { currentPage, totalPages, itemsPerPage } = useSelector((state) => state.me.activities);
 
     useEffect(() => {
         if (!userId) {
@@ -27,6 +28,11 @@ const MeActivityView = ({userId}) => {
             (activityList) => {
                 setActivities(activityList);
                 setLoading(false);
+                setError(null);
+            },
+            (errMessage) => {
+                setError(errMessage);
+                setLoading(false);
             }
         );
 
@@ -38,7 +44,17 @@ const MeActivityView = ({userId}) => {
     };
 
     if (loading) {
-        return <div className={styles.errorMessage}><LoadingIndicator/></div>;
+        return <div className={styles.errorMessage}><LoadingIndicator /></div>;
+    }
+
+    if (error) {
+        return <div className={styles.errorMessage}>
+            <LoadingIndicator
+                isLoading={false}
+                hasError={true}
+                text={error}
+            />
+        </div>;
     }
 
     if (!loading && activities.length === 0) {
@@ -60,9 +76,7 @@ const MeActivityView = ({userId}) => {
                     username={activity.username}
                     date={activity.date}
                     commentText={activity.commentText}
-                    animeImage={activity.animeImage}
-                    animeTitle={activity.animeTitle}
-                    animeScore={activity.animeScore}
+                    anime={activity.anime}
                     likeCount={activity.likeCount}
                     animeId={activity.animeId}
                     id={activity.id}

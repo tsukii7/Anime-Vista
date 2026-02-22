@@ -1,16 +1,18 @@
-// src/views/Rank/components/Rankings.jsx
 import React from 'react';
 import { useSelector } from 'react-redux';
 import RankingCard from './RankingCard.jsx';
 import styles from '../RankView.module.css';
 import LoadingIndicator from "../../../components/LoadingIndicator.jsx";
+import { useLanguage } from '../../../i18n/LanguageContext.jsx';
+import { getDisplayTitle } from '../../../utils/animeUtils.js';
 
 const Rankings = () => {
-    const { list, status, error, currentPage } = useSelector((state) => state.ranking);
+    const { list, status, currentPage, error } = useSelector((state) => state.ranking);
+    const { lang, t } = useLanguage();
     const perPage = 15;
 
     if (status === 'loading') return <LoadingIndicator />;
-    if (status === 'failed') return <LoadingIndicator isLoading={false} hasError={true}/>;
+    if (status === 'failed') return <LoadingIndicator isLoading={false} hasError={true} text={error || t('common.error') || "Oops! Something went wrong..."} />;
 
     const getHeaderColor = (rank) => {
         switch (rank) {
@@ -32,11 +34,8 @@ const Rankings = () => {
                 return (
                     anime && <RankingCard
                         key={anime?.id}
-                        id={anime?.id}
                         rank={globalRank}
-                        title={anime?.title?.romaji ?? 'No Title'}
-                        image={anime?.coverImage?.large ?? ''}
-                        score={anime?.averageScore ?? 'N/A'}
+                        anime={anime}
                         color={getHeaderColor(globalRank)}
                     />
                 );

@@ -1,25 +1,39 @@
-import React, {useEffect} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {fetchPopularityList, setPopularityPage} from '../../../models/home/popularityListSlice';
+import React, { useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchPopularityList, setPopularityPage } from '../../../models/home/popularityListSlice';
 import PopularityListItem from './PopularityListItem';
 import styles from '../HomeView.module.css';
 import LoadingIndicator from "../../../components/LoadingIndicator.jsx";
 import Pagination from "../../../components/Pagination";
+import { useLanguage } from '../../../i18n/LanguageContext.jsx';
+import { getDisplayTitle } from '../../../utils/animeUtils.js';
 
 const PopularityList = () => {
     const dispatch = useDispatch();
-    const {list, status, error, currentPage, totalPages} = useSelector((state) => state.popularityList);
+    const { list, status, currentPage, totalPages, error } = useSelector((state) => state.popularityList);
+    const { lang, t } = useLanguage();
+
+    const fetchPromiseRef = useRef(null);
+    const lastPageFetched = useRef(null);
 
     useEffect(() => {
-        dispatch(fetchPopularityList({page: currentPage}));
+        if (lastPageFetched.current !== currentPage || status === 'idle') {
+            if (fetchPromiseRef.current) fetchPromiseRef.current.abort();
+            fetchPromiseRef.current = dispatch(fetchPopularityList({ page: currentPage }));
+            lastPageFetched.current = currentPage;
+        }
+
+        return () => {
+            if (fetchPromiseRef.current) fetchPromiseRef.current.abort();
+        };
     }, [currentPage, dispatch]);
 
     const handlePageChange = (page) => {
         dispatch(setPopularityPage(page));
     };
 
-    if (status === 'loading') return <LoadingIndicator/>;
-    if (status === 'failed') return <LoadingIndicator isLoading={false} hasError={true}/>;
+    if (status === 'loading') return <LoadingIndicator />;
+    if (status === 'failed') return <LoadingIndicator isLoading={false} hasError={true} text={error || t('common.error') || "Oops! Something went wrong..."} />;
 
     return (
         <div>
@@ -27,16 +41,7 @@ const PopularityList = () => {
                 {list.map((anime) => (
                     anime && <PopularityListItem
                         key={anime?.id}
-                        anime={{
-                            id: anime?.id || 'N/A',
-                            title: anime?.title.romaji || 'N/A',
-                            image: anime?.coverImage.large,
-                            category: `${anime?.genres[0] || 'Unknown'} • ${anime?.startDate.year}-${anime?.startDate.month}-${anime?.startDate.day}`,
-                            description: (anime?.description?.length > 500
-                                ? anime?.description.slice(0, 1000) + '...'
-                                : anime?.description) || 'N/A',
-                            rating: Math.round((anime?.averageScore || 0) / 20) || 'N/A',
-                        }}
+                        anime={anime}
                     />
                 ))}
             </div>

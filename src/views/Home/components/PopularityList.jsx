@@ -6,25 +6,16 @@ import styles from '../HomeView.module.css';
 import LoadingIndicator from "../../../components/LoadingIndicator.jsx";
 import Pagination from "../../../components/Pagination";
 import { useLanguage } from '../../../i18n/LanguageContext.jsx';
-import { getDisplayTitle } from '../../../utils/animeUtils.js';
 
 const PopularityList = () => {
     const dispatch = useDispatch();
     const { list, status, currentPage, totalPages, error } = useSelector((state) => state.popularityList);
-    const { lang, t } = useLanguage();
-
-    const fetchPromiseRef = React.useRef(null);
-    const lastPageFetched = React.useRef(null);
+    const { t } = useLanguage();
 
     React.useEffect(() => {
-        if (lastPageFetched.current !== currentPage || status === 'idle') {
-            if (fetchPromiseRef.current) fetchPromiseRef.current.abort();
-            fetchPromiseRef.current = dispatch(fetchPopularityList({ page: currentPage }));
-            lastPageFetched.current = currentPage;
-        }
-
+        const request = dispatch(fetchPopularityList({ page: currentPage }));
         return () => {
-            if (fetchPromiseRef.current) fetchPromiseRef.current.abort();
+            request.abort();
         };
     }, [currentPage, dispatch]);
 

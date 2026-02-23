@@ -54,10 +54,14 @@ jobs:
           host: 128.14.224.92
           username: ubuntu
           key: ${{ secrets.SERVER_SSH_KEY }}
+          script_stop: true
           script: |
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             source ~/.bashrc || true
             cd /www/wwwroot/anime-vista
-            npm ci --omit=dev
+            HUSKY=0 npm ci --omit=dev --ignore-scripts
             pm2 restart anime-vista || pm2 start server.js --name anime-vista
+            sleep 2
+            pm2 status
+            curl -I http://127.0.0.1:3000 || true

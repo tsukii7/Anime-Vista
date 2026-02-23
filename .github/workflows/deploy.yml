@@ -54,8 +54,8 @@ jobs:
           host: 128.14.224.92
           username: ubuntu
           key: ${{ secrets.SERVER_SSH_KEY }}
-          script_stop: true
           script: |
+            set -euo pipefail
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             source ~/.bashrc || true

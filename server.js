@@ -25,33 +25,29 @@ app.post("/anilist-proxy", async (req, res) => {
         },
         timeout: 30000,
     });
+    const endpoints = [
+        "https://trace.moe/anilist/",
+        "https://graphql.anilist.co",
+    ];
 
-    try {
-        const response = await requestWithTimeout("https://trace.moe/anilist/");
-        return res.json(response.data);
-    } catch (error) {
-        const responseText = typeof error?.response?.data === "string"
-            ? error.response.data
-            : JSON.stringify(error?.response?.data || {});
-        const isCloudflareWorkerError = error?.response?.status === 500 &&
-            responseText.includes("Please enable cookies") &&
-            responseText.includes("Ray ID");
-
-        if (isCloudflareWorkerError) {
-            try {
-                const fallback = await requestWithTimeout("https://graphql.anilist.co");
-                return res.json(fallback.data);
-            } catch (fallbackError) {
-                return res
-                    .status(fallbackError.response?.status || 500)
-                    .json(fallbackError.response?.data || { error: fallbackError.message });
+    let lastError = null;
+    for (const endpoint of endpoints) {
+        try {
+            const response = await requestWithTimeout(endpoint);
+            return res.json(response.data);
+        } catch (error) {
+            lastError = error;
+            // If client request is invalid (4xx except 429), don't keep retrying endpoints.
+            const status = error?.response?.status || 500;
+            if (status >= 400 && status < 500 && status !== 429) {
+                break;
             }
         }
-
-        return res
-            .status(error.response?.status || 500)
-            .json(error.response?.data || { error: error.message });
     }
+
+    return res
+        .status(lastError?.response?.status || 500)
+        .json(lastError?.response?.data || { error: lastError?.message || "AniList proxy failed" });
 });
 
 

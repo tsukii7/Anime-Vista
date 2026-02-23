@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Person2RoundedIcon from '@mui/icons-material/Person2Rounded';
@@ -15,8 +15,13 @@ import { useDispatch } from "react-redux";
 const TopBar = () => {
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
+    const [mounted, setMounted] = useState(false);
     const dispatch = useDispatch();
     const { lang, setLang, t } = useLanguage();
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const handleUserClick = (event) => {
         if (isLoggedIn()) {
@@ -43,21 +48,35 @@ const TopBar = () => {
 
     return (
         <header className="topbar">
-            <div className="topbar-logo" onClick={() => navigate('/')}>AnimeVista</div>
+            <button
+                type="button"
+                className="topbar-logo"
+                onClick={() => navigate('/')}
+                aria-label={t('nav.home')}
+            >
+                AnimeVista
+            </button>
             <SearchBar />
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <button
                     className="lang-button"
                     onClick={() => setLang(lang === 'en' ? 'zh' : 'en')}
+                    aria-label={t('common.switchLanguage')}
                 >
                     <TranslateIcon fontSize="small" />
-                    {lang === 'en' ? '中' : 'EN'}
+                    {lang === 'en' ? t('common.langZhShort') : t('common.langEnShort')}
                 </button>
-                <button className="user-button" onClick={handleUserClick}>
+                <button
+                    className="user-button"
+                    onClick={handleUserClick}
+                    aria-label={t('nav.myProfile')}
+                    aria-haspopup="menu"
+                    aria-expanded={Boolean(anchorEl)}
+                >
                     <Person2RoundedIcon className="user-icon" />
                 </button>
                 {
-                    isLoggedIn() && (
+                    mounted && isLoggedIn() && (
                         <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
                             <MenuItem onClick={handleGoHome}>{t('nav.myProfile') || 'My Profile'}</MenuItem>
                             <MenuItem onClick={handleLogout}>{t('me.logout')}</MenuItem>
@@ -69,5 +88,6 @@ const TopBar = () => {
         </header>
     );
 };
+
 
 export default TopBar;

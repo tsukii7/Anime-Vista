@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router';
 import styles from './ActivityCard.module.css';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
@@ -31,7 +30,7 @@ const ActivityCard = ({
   };
 
   const handleLikeClick = async (e) => {
-    e.stopPropagation(); // 防止事件冒泡
+    e.stopPropagation(); // Prevent event bubbling
     const currentUser = getCurrentUser();
     if (!currentUser) return;
 

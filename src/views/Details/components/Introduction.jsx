@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
 import styles from './Introduction.module.css';
 import '../../../styles/global.css';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -24,10 +24,10 @@ const Introduction = ({ introduction, anime }) => {
         tags,
     } = introduction;
 
-    const [translatedDesc, setTranslatedDesc] = useState(description);
-    const [isTranslating, setIsTranslating] = useState(false);
+    const [translatedDesc, setTranslatedDesc] = React.useState(description);
+    const [isTranslating, setIsTranslating] = React.useState(false);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (lang === 'zh') {
             if (description) {
                 setIsTranslating(true);

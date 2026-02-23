@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import Conditions from './components/Conditions';
 import Rankings from './components/Rankings';
 import Pagination from '../../components/Pagination.jsx';
@@ -11,10 +11,14 @@ const RankView = ({ onPageChange }) => {
     return (
         <div className={styles.rankContainer}>
             <Conditions />
-            <Rankings />
-            {status === 'succeeded' && (
-                <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={onPageChange} />
-            )}
+            <div className={styles.rankBody}>
+                <Rankings />
+                {status === 'succeeded' && (
+                    <div className={styles.rankPagination}>
+                        <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={onPageChange} />
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

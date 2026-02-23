@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styles from './Characters.module.css';
 import CharacterCard from './CharacterCard';
 import LoadingIndicator from "../../../components/LoadingIndicator.jsx";

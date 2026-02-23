@@ -8,19 +8,19 @@
 .searchHeader {
     display: flex;
     gap: 16px;
-    /* 统一间距为16px */
+    /* Unified spacing of 16px */
     align-items: baseline;
     flex-wrap: wrap;
-    /* 允许换行 */
+    /* Allow line wrapping */
 }
 
 
 .filterGroup {
     position: relative;
     width: 200px;
-    /* 统一容器宽度 */
+    /* Unified container width */
     min-width: 200px;
-    /* 防止flex压缩 */
+    /* Prevent flex compression */
 }
 
 .searchInput,

@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './SimilarityCard.module.css';
 import '../../../styles/global.css';
 import { NavLink } from 'react-router';

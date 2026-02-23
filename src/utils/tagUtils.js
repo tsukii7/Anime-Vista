@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { translateToChinese } from './translateText';
 
 export const translateTagSync = (tag, t, lang) => {
@@ -12,7 +12,7 @@ export const translateTagSync = (tag, t, lang) => {
 
     // 2. Chinese Pattern Recognition (Regex)
 
-    // Pattern: Primarily X Cast -> 以X角色为主
+    // Pattern: Primarily X Cast -> Essentially X Role
     const castMatch = tag.match(/^Primarily (.*) Cast$/);
     if (castMatch) {
         const role = castMatch[1];
@@ -20,7 +20,7 @@ export const translateTagSync = (tag, t, lang) => {
         return `以${roleZh}为主`;
     }
 
-    // Pattern: X Protagonist -> X主角
+    // Pattern: X Protagonist -> X Protagonist
     const protagMatch = tag.match(/^(.*) Protagonist$/);
     if (protagMatch) {
         const type = protagMatch[1];
@@ -28,7 +28,7 @@ export const translateTagSync = (tag, t, lang) => {
         return `${typeZh}主角`;
     }
 
-    // Pattern: X Themes -> X主题
+    // Pattern: X Themes -> X Themes
     const themeMatch = tag.match(/^(.*) Themes$/);
     if (themeMatch) {
         const theme = themeMatch[1];
@@ -36,7 +36,7 @@ export const translateTagSync = (tag, t, lang) => {
         return `${themeZh}主题`;
     }
 
-    // Pattern: X Manipulation -> X操作
+    // Pattern: X Manipulation -> X Manipulation
     const manipulationMatch = tag.match(/^(.*) Manipulation$/i);
     if (manipulationMatch) {
         const target = manipulationMatch[1];

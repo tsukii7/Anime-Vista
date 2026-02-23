@@ -10,14 +10,15 @@ import {
     serverTimestamp,
     query,
     where,
+    documentId,
     orderBy,
     onSnapshot, getDocs
 } from "firebase/firestore"
 import { db, auth } from "./config.js"
 import { getCurrentUser } from "./auth.js";
 import { onAuthStateChanged } from "firebase/auth";
-import React, { useEffect, useState } from "react";
-import { fetchAnimeDataBatch, setActivitiesTotalPages } from "../models/me/meSlice.js";
+import * as React from "react";
+import { fetchAnimeDataBatch } from "../models/me/meSlice.js";
 
 function formatDate(date) {
     const pad = (n) => n.toString().padStart(2, '0');
@@ -67,7 +68,7 @@ function hashUidToNumber(str) {
         hash ^= str.charCodeAt(i);
         hash *= 16777619;
     }
-    return Math.abs(hash >>> 0); // 转成正整数
+    return Math.abs(hash >>> 0); // Convert to positive integer
 }
 
 async function getUserByNumber(num) {
@@ -138,18 +139,36 @@ function listenToComments(animeId, setComments) {
         orderBy('timestamp', 'desc')
     );
 
+    const fetchUsersMap = async (userIds) => {
+        const ids = Array.from(new Set((userIds || []).filter(Boolean)));
+        if (ids.length === 0) return new Map();
+
+        const usersMap = new Map();
+        for (let i = 0; i < ids.length; i += 10) {
+            const chunk = ids.slice(i, i + 10);
+            const usersQuery = query(
+                collection(db, 'users'),
+                where(documentId(), 'in', chunk)
+            );
+            const usersSnap = await getDocs(usersQuery);
+            usersSnap.forEach((userDoc) => {
+                usersMap.set(userDoc.id, userDoc.data());
+            });
+        }
+        return usersMap;
+    };
+
     const unsubscribe = onSnapshot(q, async (snapshot) => {
         const user = getCurrentUser();
-        const results = [];
-
-        for (const docSnap of snapshot.docs) {
-            const data = docSnap.data();
-            const userRef = doc(db, 'users', data.userId);
-            const userSnap = await getDoc(userRef);
-            const userData = userSnap.data();
-
-            results.push({
-                id: docSnap.id,
+        const commentEntries = snapshot.docs.map((docSnap) => ({
+            id: docSnap.id,
+            data: docSnap.data(),
+        }));
+        const usersMap = await fetchUsersMap(commentEntries.map((entry) => entry.data.userId));
+        const results = commentEntries.map(({ id, data }) => {
+            const userData = usersMap.get(data.userId);
+            return {
+                id,
                 username: userData?.username,
                 avatar: userData?.avatar,
                 text: data.text,
@@ -157,8 +176,8 @@ function listenToComments(animeId, setComments) {
                 hasLiked: user ? data.likedUsers.includes(user.userId) : false,
                 timestamp: data.timestamp ? formatDate(data.timestamp.toDate()) : 'Just now',
                 userId: data.userId,
-            });
-        }
+            };
+        });
 
         setComments(results);
     });
@@ -180,9 +199,9 @@ async function unlikeComment(userId, commentId) {
 
 
 function useUserFavorites() {
-    const [favorites, setFavorites] = useState([]);
+    const [favorites, setFavorites] = React.useState([]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         let unsubFirestore = null;
 
         const unsubAuth = onAuthStateChanged(auth, (user) => {
@@ -242,7 +261,7 @@ function listenToUserInfoByNumber(userNumber, onData) {
     return unsubscribe;
 }
 
-function listenToUserActivities(userId, currentPage, itemsPerPage, dispatch, callback, onError) {
+function listenToUserActivities(userId, dispatch, callback, onError) {
     const commentsRef = collection(db, 'comments');
     const q = query(commentsRef, where('userId', '==', userId));
 
@@ -301,14 +320,7 @@ function listenToUserActivities(userId, currentPage, itemsPerPage, dispatch, cal
                 .filter(Boolean)
                 .sort((a, b) => b.timestamp - a.timestamp);
 
-            const totalItems = activities.length;
-            const totalPages = Math.ceil(totalItems / itemsPerPage);
-            dispatch(setActivitiesTotalPages(totalPages));
-
-            const start = (currentPage - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-
-            callback(activities.slice(start, end));
+            callback(activities);
         } catch (error) {
             console.error('Error in listenToUserActivities:', error);
             if (onError) onError(error.message);
@@ -320,12 +332,62 @@ function listenToUserActivities(userId, currentPage, itemsPerPage, dispatch, cal
     return unsubscribe;
 }
 
-async function updateUserProfile(userId, { username, introduction }) {
+async function updateUserProfile(userId, { username, introduction, avatar }) {
     const userRef = doc(db, 'users', userId);
-    await updateDoc(userRef, {
+    const updateData = {
         username: username.trim(),
         introduction: introduction.trim()
+    };
+    if (avatar) {
+        updateData.avatar = avatar;
+    }
+    await updateDoc(userRef, updateData);
+}
+
+/**
+ * Resizes an image to 200x200 and returns a Base64 JPEG string.
+ */
+async function resizeAvatar(file) {
+    return new Promise((resolve, reject) => {
+        if (typeof window === 'undefined') return resolve(null);
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const SIZE = 200;
+                canvas.width = SIZE;
+                canvas.height = SIZE;
+
+                const ctx = canvas.getContext('2d');
+
+                // Calculate source dimensions for center cropping (Aspect Fill)
+                let srcX = 0, srcY = 0, srcW = img.width, srcH = img.height;
+                const aspectRatio = img.width / img.height;
+
+                if (aspectRatio > 1) {
+                    // Wider than tall
+                    srcW = img.height;
+                    srcX = (img.width - srcW) / 2;
+                } else {
+                    // Taller than wide
+                    srcH = img.width;
+                    srcY = (img.height - srcH) / 2;
+                }
+
+                ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, SIZE, SIZE);
+                resolve(canvas.toDataURL('image/jpeg', 0.8));
+            };
+            img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
     });
+}
+
+async function uploadAvatar(userId, file) {
+    // We store the avatar directly in Firestore as a Base64 string to bypass GFW/CORS issues.
+    return await resizeAvatar(file);
 }
 
 
@@ -345,5 +407,6 @@ export {
     listenToComments,
     listenToUserInfoByNumber,
     listenToUserActivities,
-    updateUserProfile
+    updateUserProfile,
+    uploadAvatar
 }

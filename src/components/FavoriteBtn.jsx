@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { addFavorite, removeFavorite } from "../firebase/db.js";
 import { getCurrentUser, isLoggedIn } from "../firebase/auth.js";
 import styles from './FavoriteBtn.module.css';
@@ -10,9 +10,13 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import Portal from '@mui/material/Portal';
 
-const FavoriteBtn = ({ isFavorite, id }) => {
-    const [showAlert, setShowAlert] = useState(false);
+const FavoriteBtn = ({ isFavorite, id, variant = 'default' }) => {
+    const [showAlert, setShowAlert] = React.useState(false);
     const { t } = useLanguage();
+    const isOverlay = variant === 'overlay';
+    const btnClass = `${styles.heartBtn} ${isOverlay ? styles.heartBtnOverlay : ''}`.trim();
+    const filledClass = `${styles.heartFilled} ${isOverlay ? styles.heartFilledOverlay : ''}`.trim();
+    const outlinedClass = `${styles.heartOutlined} ${isOverlay ? styles.heartOutlinedOverlay : ''}`.trim();
 
     async function handleFavoriteClickACB(event) {
         event.preventDefault();
@@ -36,11 +40,11 @@ const FavoriteBtn = ({ isFavorite, id }) => {
 
     return (
         <>
-            <button className={styles.heartBtn} onClick={handleFavoriteClickACB}>
+            <button className={btnClass} onClick={handleFavoriteClickACB}>
                 {isFavorite ? (
-                    <FavoriteIcon className={styles.heartFilled} />
+                    <FavoriteIcon className={filledClass} />
                 ) : (
-                    <FavoriteBorderIcon className={styles.heartOutlined} />
+                    <FavoriteBorderIcon className={outlinedClass} />
                 )}
             </button>
 

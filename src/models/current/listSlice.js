@@ -62,7 +62,7 @@ const COUNT_QUERY = `
   }
 `;
 
-// 获取当前季节动漫分页内容
+// Get paging content for the current season's anime
 export const fetchAnimeList = createAsyncThunk(
   'list/fetchAnimeList',
   async ({ page = 1, perPage = 20 } = {}, { signal }) => {
@@ -82,7 +82,7 @@ export const fetchAnimeList = createAsyncThunk(
   }
 );
 
-// 获取当前季节动漫总数量（分页拉取 ID）
+// Get total count of the current season's anime (fetching IDs in pages)
 export const fetchSeasonTotalCount = createAsyncThunk(
   'list/fetchSeasonTotalCount',
   async (_, { signal }) => {

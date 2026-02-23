@@ -27,6 +27,30 @@
     padding: 8px;
     font-size: 14px;
 }
+.favorite-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    z-index: 2;
+    transition: transform 0.15s ease;
+}
+.favorite-badge-active {
+    background: transparent;
+}
+.favorite-badge:hover {
+    transform: scale(1.04);
+}
+.favorite-badge :global(.heartBtn) {
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+}
 .anime-title {
     font-size: 16px;
     font-weight: bold;
@@ -154,6 +178,33 @@
     width: 100%;
     height: 50px;
     margin-top: 30px;
+}
+.current-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.favorite-filter-button {
+    border: 1px solid #79747E;
+    background: #fff;
+    color: #4A4459;
+    border-radius: 999px;
+    height: 48px;
+    padding: 0 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.favorite-filter-button:hover {
+    background: rgba(101, 85, 143, 0.08);
+    color: #1D1B20;
+    border-color: #65558F;
+}
+.favorite-filter-button-active {
+    background: rgba(232, 222, 248, 0.55);
+    color: #4A4459;
+    border-color: #79747E;
 }
 .error-message {
     height: 100%;

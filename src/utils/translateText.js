@@ -77,7 +77,7 @@ export async function translateToChinese(text) {
     // Check cache first
     const cache = getCache();
     if (cache[textToTranslate]) {
-        return cache[textToTranslate] + (sourceText ? `\n\n(来源：${sourceText.replace(/^\(?(Source:\s*)?/i, '').replace(/\)?$/, '')})` : '');
+        return cache[textToTranslate] + (sourceText ? `\n\n(Source: ${sourceText.replace(/^\(?(Source:\s*)?/i, '').replace(/\)?$/, '')})` : '');
     }
 
     try {
@@ -96,7 +96,7 @@ export async function translateToChinese(text) {
 
             if (fullTranslation.trim().length > 0) {
                 setCache(textToTranslate, fullTranslation);
-                return fullTranslation + (sourceText ? `\n\n(来源：${sourceText.replace(/^\(?(Source:\s*)?/i, '').replace(/\)?$/, '')})` : '');
+                return fullTranslation + (sourceText ? `\n\n(Source: ${sourceText.replace(/^\(?(Source:\s*)?/i, '').replace(/\)?$/, '')})` : '');
             }
         }
         return text; // Fallback

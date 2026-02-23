@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styles from './Staffs.module.css';
 import StaffCard from './StaffCard';
 import LoadingIndicator from "../../../components/LoadingIndicator.jsx";

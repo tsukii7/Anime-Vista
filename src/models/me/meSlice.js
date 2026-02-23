@@ -1,13 +1,14 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import axios from 'axios';
 import anilistApi from '../../utils/anilistApi';
 
 const query = `
-    query ($ids: [Int]) {
-      Page(perPage: 50) {
-        media(id_in: $ids, type: ANIME) {
+    query ($ids: [Int], $page: Int, $perPage: Int) {
+      Page(page: $page, perPage: $perPage) {
+        media(id_in: $ids, type: ANIME, genre_not_in: ["hentai"]) {
           id
-                    title { english native romaji }
-                    synonyms
+          title { english native romaji }
+          synonyms
           coverImage { large }
           description
           averageScore
@@ -18,16 +19,55 @@ const query = `
       }
     }
 `;
+const inFlightBatchRequests = new Map();
 
 export const fetchAnimeDataBatch = createAsyncThunk(
   'me/fetchAnimeDataBatch',
-  async (ids) => {
-    const response = await anilistApi.post('', {
-      query: query,
-      variables: { ids: ids },
-    });
+  async (ids, { signal }) => {
+    const requestKey = Array.isArray(ids) ? ids.join(',') : '';
+    if (inFlightBatchRequests.has(requestKey)) {
+      try {
+        return await inFlightBatchRequests.get(requestKey);
+      } catch (inFlightError) {
+        const inFlightCancelled = axios.isCancel(inFlightError) ||
+          inFlightError?.name === 'AbortError' ||
+          inFlightError?.message?.toLowerCase().includes('cancel');
+        if (!inFlightCancelled || signal?.aborted) {
+          throw inFlightError;
+        }
+      }
+    }
+    const requestPromise = (async () => {
+      const variables = {
+        ids: ids,
+        page: 1,
+        perPage: ids.length
+      };
+      const response = await anilistApi.post('', {
+        query: query,
+        variables: variables,
+      }, { signal });
 
-    return response.data.data.Page.media;
+      const data = response.data;
+
+      if (data.errors) {
+        throw new Error(data.errors[0].message);
+      }
+
+      return data?.data?.Page?.media || [];
+    })();
+    inFlightBatchRequests.set(requestKey, requestPromise);
+    try {
+      return await requestPromise;
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        throw error;
+      }
+      console.error('[meSlice] fetchAnimeDataBatch failed:', error);
+      throw error;
+    } finally {
+      inFlightBatchRequests.delete(requestKey);
+    }
   }
 );
 

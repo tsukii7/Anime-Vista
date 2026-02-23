@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import MeView from '../views/Me/MeView';
 import { listenToUserInfoByNumber } from "../firebase/db.js";
@@ -13,10 +13,15 @@ const MePresenter = () => {
 
   useEffect(() => {
     const unsubscribe = listenToUserInfoByNumber(userNumber, (data) => {
-      if (data) setUserInfo(data);
+      if (data) {
+        setUserInfo(prev => {
+          if (JSON.stringify(prev) === JSON.stringify(data)) return prev;
+          return data;
+        });
+      }
     });
 
-    return () => unsubscribe(); // 清理监听器
+    return () => unsubscribe(); // Clean up listener
   }, [userNumber]);
 
 

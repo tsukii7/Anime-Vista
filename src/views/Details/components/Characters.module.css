@@ -40,7 +40,7 @@
 
 .grid {
     display: grid;
-    /* 自动调整一行几个卡片 */
+    /* Automatically adjust cards per row */
     grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
     gap: 20px;
     justify-items: center;

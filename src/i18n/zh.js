@@ -18,7 +18,28 @@ export const zh = {
         password: "密码",
         confirmPassword: "确认密码",
         loginWithGoogle: "Google 登录",
-        forgotPassword: "忘记密码？"
+        forgotPassword: "忘记密码？",
+        loginFailed: "登录失败，请稍后重试。",
+        invalidCredential: "邮箱或密码错误。",
+        userDisabled: "该账号已被停用。",
+        userNotFound: "未找到该邮箱对应的账号。",
+        wrongPassword: "密码错误。",
+        loginCheckCredentials: "登录失败，请检查账号信息。",
+        enterEmailAndPassword: "请输入邮箱和密码。",
+        enterEmail: "请输入邮箱。",
+        passwordResetSent: "重置密码邮件已发送。",
+        unexpectedErrorPrefix: "发生未知错误：",
+        registrationFailed: "注册失败，请稍后重试。",
+        emailAlreadyInUse: "该邮箱已被注册。",
+        invalidEmail: "邮箱格式不正确。",
+        weakPassword: "密码强度不足，请使用字母和数字组合。",
+        operationNotAllowed: "邮箱注册暂未开启，请联系管理员。",
+        registrationCheckInput: "注册失败，请检查输入信息。",
+        fillAllFields: "请填写所有字段。",
+        enterValidEmail: "请输入有效的邮箱地址。",
+        passwordsDoNotMatch: "两次输入的密码不一致。",
+        passwordRule: "密码至少 8 位，且需包含字母和数字。",
+        registrationSuccessRedirect: "注册成功，正在跳转..."
     },
     me: {
         favorites: "我的收藏",
@@ -33,7 +54,19 @@ export const zh = {
         editProfile: "编辑资料",
         introductionTitle: "介绍",
         saving: "保存中...",
-        profileUpdated: "资料已成功更新！"
+        profileUpdated: "资料已成功更新！",
+        changeAvatar: "更换头像",
+        uploadAvatar: "上传头像",
+        greeting: "嗨",
+        introductionFallback: "介绍一下你自己吧！",
+        avatarSizeLimit: "图片大小不能超过 10MB。",
+        usernameRequired: "用户名不能为空。",
+        updateProfileFailed: "更新资料失败，请稍后再试。",
+        retryLoading: "重新加载",
+        favoritesLoadFailed: "加载收藏失败。",
+        invalidFavoritesData: "服务器返回了无效数据。",
+        favoritesFoundPrefix: "你的主页中有",
+        favoritesFoundSuffix: "条收藏，但暂时无法从 AniList 拉取详情。"
     },
     details: {
         comment: "评论",
@@ -77,7 +110,12 @@ export const zh = {
         similarAnime: "相似动漫",
         nothingFound: "什么都没找到...",
         writeComment: "写下你的评论...",
-        tags: "标签"
+        tags: "标签",
+        na: "暂无",
+        dayShort: "天",
+        hourShort: "时",
+        minuteShort: "分",
+        minuteUnit: "分钟"
     },
     search: {
         placeholder: "搜索动漫...",
@@ -105,11 +143,7 @@ export const zh = {
             "RELEASING": "连载中",
             "NOT_YET_RELEASED": "未播出",
             "CANCELLED": "已取消",
-            "HIATUS": "停更",
-            "Winter": "冬季",
-            "Spring": "春季",
-            "Summer": "夏季",
-            "Fall": "秋季"
+            "HIATUS": "停更"
         },
         genreList: {
             "Action": "动作",
@@ -247,15 +281,47 @@ export const zh = {
         popular: "历史最高人气",
         score: "评分最高"
     },
+    current: {
+        updatedToEpisode: "更新至第 {episode} 集",
+        totalEpisodes: "共 {episodes} 集"
+    },
     home: {
-        trendingNow: "当前热门"
+        trendingNow: "当前热门",
+        welcome: "欢迎来到 AnimeVista",
+        introText: [
+            "欢迎来到 AnimeVista，在这里发现值得追的每一部番。",
+            "新番上线、旧作重温，每一次相遇都像久别重逢。",
+            "评分、评论、收藏同步记录，让追番轨迹清晰可见。",
+            "还在犹豫下一部看什么，AnimeVista 会把答案悄悄递给你。"
+        ]
     },
     common: {
-        loading: "稍等一下... 初音正在为你加载！",
+        loading: "稍等一下... 初音正在为你加载！> <",
         translating: "正在翻译...",
         error: "啊哦！发生了一些错误...T T",
         loginToFavorite: "请先登录才能收藏",
         showMore: "展示更多",
-        showLess: "收起"
+        showLess: "收起",
+        unknown: "未知",
+        switchLanguage: "切换语言",
+        langZhShort: "中",
+        langEnShort: "EN",
+        clearAll: "清空全部",
+        weekdays: {
+            Mon: "周一",
+            Tue: "周二",
+            Wed: "周三",
+            Thu: "周四",
+            Fri: "周五",
+            Sat: "周六",
+            Sun: "周日"
+        },
+        seasons: {
+            Spring: "春季",
+            Summer: "夏季",
+            Fall: "秋季",
+            Autumn: "秋季",
+            Winter: "冬季"
+        }
     }
 };

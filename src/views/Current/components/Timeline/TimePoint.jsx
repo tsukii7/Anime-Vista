@@ -2,19 +2,12 @@ import style from "../../CurrentView.module.css";
 import { useLanguage } from '../../../../i18n/LanguageContext.jsx';
 
 export default function TimePoint({ letter, date, weekday }) {
-    const { lang } = useLanguage();
-    const weekMap = {
-        'Mon': '周一',
-        'Tue': '周二',
-        'Wed': '周三',
-        'Thu': '周四',
-        'Fri': '周五',
-        'Sat': '周六',
-        'Sun': '周日'
-    };
-    const ZHWeekday = weekMap[weekday] || weekday;
-    const displayLetter = lang === 'zh' ? ZHWeekday.replace('周', '') : letter;
-    const displayWeekday = lang === 'zh' ? ZHWeekday : weekday;
+    const { lang, t } = useLanguage();
+    const translatedWeekday = t(`common.weekdays.${weekday}`) !== `common.weekdays.${weekday}`
+        ? t(`common.weekdays.${weekday}`)
+        : weekday;
+    const displayLetter = lang === 'zh' ? translatedWeekday.replace('周', '') : letter;
+    const displayWeekday = lang === 'zh' ? translatedWeekday : weekday;
     return (
         <div className={style.TimePoint}>
             <div className={style.TimePointLetter}>

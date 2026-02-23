@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styles from './Similarities.module.css';
 import SimilarityCard from './SimilarityCard';
 import LoadingIndicator from "../../../components/LoadingIndicator.jsx";

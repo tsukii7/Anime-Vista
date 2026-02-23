@@ -1,13 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-// 当前年份作为默认年份选项
+// Current year as default year option
 const currentYear = new Date().getFullYear();
 
 const initialState = {
   search: '',
   genres: '',
   season: '',
-  year: currentYear, // 设置默认年份为当前年份
+  year: currentYear, // Set default year to current year
   format: '',
   status: '',
   page: 1,

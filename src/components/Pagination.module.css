@@ -45,6 +45,8 @@
     opacity: 0.3;
     cursor: pointer;
     transition: opacity 0.2s ease;
+    border: none;
+    padding: 0;
 }
 
 .dot:hover {

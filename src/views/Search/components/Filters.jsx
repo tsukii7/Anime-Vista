@@ -1,7 +1,6 @@
-import React from 'react';
 import styles from '../SearchView.module.css';
 import { useLanguage } from '../../../i18n/LanguageContext.jsx';
-import { FormControl, Select, MenuItem, InputLabel } from '@mui/material';
+import { FormControl, Select, MenuItem } from '@mui/material';
 
 const FILTER_OPTIONS = {
   genres: {
@@ -29,7 +28,7 @@ const Filters = ({ filters, onFilterChange }) => {
   const { t } = useLanguage();
   return (
     <div className={styles.searchHeader}>
-      {/* Year 筛选 */}
+      {/* Year filter */}
       <div className={styles.filterGroup}>
         <label>{t('search.year') || 'Year'}</label>
         <input
@@ -38,7 +37,7 @@ const Filters = ({ filters, onFilterChange }) => {
           value={filters.year || ''}
           onChange={(e) => {
             const value = e.target.value;
-            // 限制最大4位数
+            // Limit to max 4 digits
             if (value === '' || (value.length <= 4 && !isNaN(value))) {
               onFilterChange('year', value === '' ? '' : parseInt(value));
             }
@@ -47,7 +46,7 @@ const Filters = ({ filters, onFilterChange }) => {
         />
       </div>
 
-      {/* 其他下拉筛选 */}
+      {/* Other dropdown filters */}
       {Object.entries(FILTER_OPTIONS).map(([field, config]) => (
         <div key={field} className={styles.filterGroup}>
           <label>{t(`search.${field}`) || config.label}</label>

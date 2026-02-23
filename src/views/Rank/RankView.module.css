@@ -5,6 +5,20 @@
     flex-direction: column;
     align-items: center;
     border-radius: 32px;
+    overflow: visible;
+}
+
+.rankBody {
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.rankPagination {
+    margin-top: 4px;
 }
 
 
@@ -33,6 +47,10 @@
     align-items: center;
     position: relative;
     transition: background-color 0.2s ease;
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
 }
 
 .tabItem:hover {
@@ -103,8 +121,8 @@
 
 .cardText {
     position: absolute;
-    top: 3px;
-    left: 16px;
+    top: 2px;
+    left: 12px;
     display: inline-flex;
     justify-content: flex-start;
     align-items: center;
@@ -139,6 +157,7 @@
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
 }
 
@@ -187,10 +206,12 @@
     display: grid;
     width: 90%;
     grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-    row-gap: 35px;
+    row-gap: 24px;
     column-gap: 50px;
     max-width: calc(210px * 5 + 50px * 4);
-    padding: 30px 5%;
+    padding: 18px 5% 6px;
     justify-content: center;
     justify-items: center;
+    align-content: start;
+    margin: 0 auto;
 }

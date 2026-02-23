@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAnimeDetails } from '../models/details/detailsSlice';
 import DetailsView from '../views/Details/DetailsView';
@@ -11,29 +11,26 @@ const DetailsPresenter = () => {
     const { animeId } = useParams();
 
     const { anime, status, error } = useSelector((state) => state.details);
-    const abortControllerRef = useRef(null);
+    const fetchPromiseRef = React.useRef(null);
+    const abortThunkPromise = (promise) => {
+        if (promise && typeof promise.abort === 'function') {
+            promise.abort();
+        }
+    };
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (animeId) {
             // Caching logic: Only fetch if the current anime in store doesn't match the URL ID
             const isAlreadyLoaded = anime && String(anime.id) === String(animeId);
 
             if (!isAlreadyLoaded) {
-                // Cancel any existing pending requests for previous IDs
-                if (abortControllerRef.current) {
-                    abortControllerRef.current.abort();
-                }
-                abortControllerRef.current = new AbortController();
-
-                dispatch(fetchAnimeDetails(Number(animeId)));
+                abortThunkPromise(fetchPromiseRef.current);
+                fetchPromiseRef.current = dispatch(fetchAnimeDetails(Number(animeId)));
             }
         }
 
         return () => {
-            // Cleanup: abort on unmount or ID change
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
-            }
+            abortThunkPromise(fetchPromiseRef.current);
         };
     }, [animeId, dispatch]);
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './favoriteCard.module.css';
 import FavoriteBtn from '../../../components/FavoriteBtn';
 import { useNavigate } from 'react-router';

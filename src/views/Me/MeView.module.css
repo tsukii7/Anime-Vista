@@ -1,7 +1,7 @@
-/* 主容器 */
+/* Main Container */
 .mainContainer {
   width: 100%;
-  /* 新增响应式 */
+  /* Responsive adjustments */
   min-width: 320px;
   min-height: 100%;
   margin: 0 auto;
@@ -12,7 +12,7 @@
   border-radius: 32px;
 }
 
-/* 修改后的背景图片 */
+/* Modified background image */
 .backgroundImage {
   width: 100%;
   height: 200px;
@@ -21,14 +21,14 @@
   top: 0;
   object-fit: cover;
   object-position: center 15%;
-  /* 保持顶部对齐 */
+  /* Align to top */
   opacity: 0.4;
   z-index: 0;
-  /* 确保在底层 */
+  /* Ensure it's at the bottom layer */
 }
 
 
-/* 编辑按钮容器 */
+/* Edit button container */
 .editButtonContainer {
   padding: 8px 16px;
   position: absolute;
@@ -46,6 +46,9 @@
   transition: all 0.2s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   white-space: nowrap;
+  appearance: none;
+  border-width: 1px;
+  font: inherit;
 }
 
 .editButtonContainer:hover {
@@ -55,16 +58,15 @@
   cursor: pointer;
 }
 
-/* 当容器宽度不足以显示完整内容时 */
+/* When container width is insufficient */
 @media (max-width: 800px) {
   .editButtonContainer {
-    right: auto;
-    left: 800px;
-    /* 左边固定间距 */
+    right: 16px;
+    left: auto;
   }
 }
 
-/* 编辑图标 */
+/* Edit icon */
 .editIconContainer {
   display: flex;
   align-items: center;
@@ -79,7 +81,7 @@
   color: #1d1b20;
 }
 
-/* 用户信息区 */
+/* User info section */
 .userProfileSection {
   position: absolute;
   left: 60px;
@@ -121,7 +123,7 @@
   height: 100%;
 }
 
-/* 修改后的标签导航相关样式 */
+/* Modified tab navigation styles */
 .tabNavigation {
   width: 100%;
   position: absolute;
@@ -132,7 +134,7 @@
 .tabList {
   display: flex;
   justify-content: center;
-  /* 水平居中两个Tab */
+  /* Horizontally center tabs */
   align-items: center;
   width: 100%;
   height: 48px;
@@ -140,14 +142,14 @@
 
 .tabItem {
   flex-grow: 1;
-  /* 使每个Tab占据相同的宽度 */
+  /* Equal width for each tab */
   display: flex;
   justify-content: center;
   /* 水平居中 */
   align-items: center;
-  /* 垂直居中 */
+  /* Vertically center */
   height: 100%;
-  /* 确保TabItem的高度与tabList一致 */
+  /* Match tabList height */
 }
 
 .tabItem:hover {
@@ -181,7 +183,7 @@
   border-top-right-radius: 4px;
 }
 
-/* 修改按钮样式 */
+/* Modify button styles */
 .activeTab,
 .inactiveTab {
   background-color: transparent;

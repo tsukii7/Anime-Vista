@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import IntroCard from '../../../components/card/IntroCard.jsx';
 import { useLanguage } from '../../../i18n/LanguageContext.jsx';
 import { getDisplayTitle } from '../../../utils/animeUtils.js';

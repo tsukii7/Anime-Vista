@@ -1,4 +1,3 @@
-import React from 'react';
 import { useSelector } from 'react-redux';
 import RankingCard from './RankingCard.jsx';
 import styles from '../RankView.module.css';

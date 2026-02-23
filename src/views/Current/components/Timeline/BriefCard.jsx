@@ -2,8 +2,9 @@ import styles from "../../CurrentView.module.css";
 import { useNavigate } from "react-router";
 import { useLanguage } from '../../../../i18n/LanguageContext.jsx';
 import { getDisplayTitle } from '../../../../utils/animeUtils.js';
+import FavoriteBtn from '../../../../components/FavoriteBtn.jsx';
 
-export default function BriefCard({ image, title, episode, time, id, anime }) {
+export default function BriefCard({ image, title, episode, time, id, anime, isFavorite }) {
     const { lang } = useLanguage();
     const navigate = useNavigate();
     const translatedTitle = getDisplayTitle(anime || { id, title, coverImage: { large: image }, synonyms: [] }, lang);
@@ -14,6 +15,9 @@ export default function BriefCard({ image, title, episode, time, id, anime }) {
     }
     return (
         <div className={styles["brief-card"]}>
+            <div className={`${styles["favorite-badge"]} ${isFavorite ? styles["favorite-badge-active"] : ''}`}>
+                <FavoriteBtn isFavorite={isFavorite} id={id || anime?.id} variant="overlay" />
+            </div>
             <img src={displayImage} alt={translatedTitle} className={styles["anime-image"]} onClick={handleClick} />
             <div className={styles["anime-info"]}>
                 <h3 className={styles["anime-title"]} onClick={handleClick}>{translatedTitle}</h3>

@@ -50,6 +50,33 @@ anilistApi.interceptors.response.use(
                 rateLimitResetTime = Date.now() + 60000;
             }
         }
+
+        // GraphQL can return HTTP 200 with `errors`, treat it as a failure.
+        const graphqlErrors = response?.data?.errors;
+        if (Array.isArray(graphqlErrors) && graphqlErrors.length > 0) {
+            const isClient = typeof window !== 'undefined';
+            const lang = isClient ? localStorage.getItem('app_language') || 'en' : 'en';
+            const firstMessage = graphqlErrors[0]?.message || 'AniList API Request Failed';
+            const lowerMsg = String(firstMessage).toLowerCase();
+            const isRateLimitedByMessage =
+                lowerMsg.includes('too many requests') ||
+                lowerMsg.includes('rate limit');
+
+            const graphqlError = new Error(firstMessage);
+            if (isRateLimitedByMessage) {
+                const retrySeconds = 60;
+                rateLimitRemaining = 0;
+                rateLimitResetTime = Date.now() + (retrySeconds * 1000);
+                graphqlError.isRateLimited = true;
+                graphqlError.retryAfter = retrySeconds;
+                graphqlError.message = lang === 'zh'
+                    ? `请求过于频繁，请在 ${retrySeconds}s 后重试`
+                    : `Too many requests. Please retry in ${retrySeconds}s`;
+            }
+            graphqlError.graphQLErrors = graphqlErrors;
+            return Promise.reject(graphqlError);
+        }
+
         return response;
     },
     async (error) => {

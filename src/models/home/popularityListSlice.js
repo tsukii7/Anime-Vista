@@ -30,10 +30,15 @@ export const fetchPopularityList = createAsyncThunk(
             variables: { page, perPage: 10 }
         }, { signal });
 
+        const pageData = response?.data?.data?.Page;
+        if (!pageData || !Array.isArray(pageData.media) || !pageData.pageInfo) {
+            throw new Error('AniList returned invalid payload');
+        }
+
         return {
-            media: response.data.data.Page.media,
+            media: pageData.media,
             page,
-            totalPages: response.data.data.Page.pageInfo.lastPage
+            totalPages: pageData.pageInfo.lastPage
         };
     }
 );

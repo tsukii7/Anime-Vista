@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './MeView.module.css';
 import MeFavouriteView from './MeFavoritesView';
 import MeActivityView from './MeActivityView';
@@ -16,10 +16,16 @@ const MeView = ({ userInfo, activeTab = 'favorites', onTabChange }) => {
   const { t } = useLanguage();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleTabChange = (tab) => {
     onTabChange(tab);
   };
+
 
   const handleEditClick = () => {
     setIsEditDialogOpen(true);
@@ -36,25 +42,31 @@ const MeView = ({ userInfo, activeTab = 'favorites', onTabChange }) => {
   return (
     <div className={styles.mainContainer}>
 
-      {/* 背景图片 */}
+      {/* Background Image */}
       <img
         className={styles.backgroundImage}
         src={background}
         alt="background"
       />
 
-      {/* 编辑按钮 */}
-      {userInfo.userId === getCurrentUser()?.userId &&
-        <div className={styles.editButtonContainer} onClick={handleEditClick}>
+      {/* Edit Button */}
+      {mounted && userInfo.userId === getCurrentUser()?.userId &&
+        <button
+          type="button"
+          className={styles.editButtonContainer}
+          onClick={handleEditClick}
+          aria-label={t('me.editProfile') || 'Edit profile'}
+        >
           <div className={styles.editIconContainer}>
             <EditIcon fontSize="small" />
           </div>
           <span className={styles.editText}>{t('me.edit') || 'Edit'}</span>
-        </div>
+        </button>
       }
 
 
-      {/* 用户信息展示 */}
+
+      {/* User Information Display */}
       <div className={styles.userProfileSection}>
         <img
           className={styles.userAvatar}
@@ -63,16 +75,16 @@ const MeView = ({ userInfo, activeTab = 'favorites', onTabChange }) => {
         />
         <div className={styles.userInfoText}>
           <span className={styles.userGreeting}>
-            Hi, {userInfo.name}  (oﾟ▽ﾟ)o <br />
+            {t('me.greeting') || 'Hi'}, {userInfo.name}  (oﾟ▽ﾟ)o <br />
           </span>
           <span className={styles.userDetails}>
             ID: {hashUidToNumber(userInfo.userId)} <br /><br />
-            {userInfo.introduction || (t('me.introduction') || "Introduce about yourself!")}
+            {userInfo.introduction || (t('me.introductionFallback') || "Introduce about yourself!")}
           </span>
         </div>
       </div>
 
-      {/* 标签切换 */}
+      {/* Tab Navigation */}
       <div className={styles.tabNavigation}>
         <div className={styles.tabList}>
           <button

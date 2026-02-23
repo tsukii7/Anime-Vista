@@ -1,5 +1,4 @@
 // src/views/Home/components/PopularityTitle.jsx
-import React from 'react';
 import styles from '../HomeView.module.css';
 import { useLanguage } from '../../../i18n/LanguageContext.jsx';
 

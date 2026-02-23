@@ -4,13 +4,23 @@ import { useLanguage } from '../../i18n/LanguageContext.jsx';
 import { getDisplayTitle } from '../../utils/animeUtils.js';
 
 export default function CurrentListView({ seasonAnime }) {
-    const { lang } = useLanguage();
+    const { t } = useLanguage();
+    const formatText = (template, params) =>
+        Object.entries(params).reduce(
+            (acc, [key, value]) => acc.replace(`{${key}}`, value),
+            template
+        );
+
     const updatedText = (anime) => {
         if (!anime?.nextAiringEpisode && !anime?.episodes) return '';
         if (anime?.nextAiringEpisode) {
-            return lang === 'zh' ? `更新至第 ${anime?.nextAiringEpisode.episode} 集` : `Update to ${anime?.nextAiringEpisode.episode} episode`;
+            return formatText(t('current.updatedToEpisode'), {
+                episode: anime?.nextAiringEpisode.episode
+            });
         } else {
-            return lang === 'zh' ? `${anime?.episodes ? '共 ' + anime?.episodes + ' 集' : ''}` : `${anime?.episodes ? anime?.episodes + ' episodes in total' : ''}`;
+            return anime?.episodes
+                ? formatText(t('current.totalEpisodes'), { episodes: anime?.episodes })
+                : '';
         }
     }
     function animeRenderCB(anime, index) {

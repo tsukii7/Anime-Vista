@@ -18,7 +18,28 @@ export const en = {
         password: "Password",
         confirmPassword: "Confirm Password",
         loginWithGoogle: "Login with Google",
-        forgotPassword: "Forgot password?"
+        forgotPassword: "Forgot password?",
+        loginFailed: "Login failed. Please try again.",
+        invalidCredential: "Incorrect email or password.",
+        userDisabled: "This account has been disabled.",
+        userNotFound: "No account found with this email.",
+        wrongPassword: "Incorrect password.",
+        loginCheckCredentials: "Login failed. Please check your credentials.",
+        enterEmailAndPassword: "Please enter both email and password.",
+        enterEmail: "Please enter your email.",
+        passwordResetSent: "Password reset email has been sent.",
+        unexpectedErrorPrefix: "Unexpected error:",
+        registrationFailed: "Registration failed. Please try again.",
+        emailAlreadyInUse: "This email is already registered.",
+        invalidEmail: "Invalid email address.",
+        weakPassword: "Password is too weak. Try using a mix of letters and numbers.",
+        operationNotAllowed: "Email/password accounts are not enabled. Please contact support.",
+        registrationCheckInput: "Registration failed. Please check your information and try again.",
+        fillAllFields: "Please fill in all fields.",
+        enterValidEmail: "Please enter a valid email address.",
+        passwordsDoNotMatch: "Passwords do not match.",
+        passwordRule: "Password must be at least 8 characters and include both letters and numbers.",
+        registrationSuccessRedirect: "Registration successful! Redirecting..."
     },
     me: {
         favorites: "Favorites",
@@ -33,7 +54,19 @@ export const en = {
         editProfile: "Edit Profile",
         introductionTitle: "Introduction",
         saving: "Saving...",
-        profileUpdated: "Profile updated successfully!"
+        profileUpdated: "Profile updated successfully!",
+        changeAvatar: "Change Avatar",
+        uploadAvatar: "Upload Avatar",
+        greeting: "Hi",
+        introductionFallback: "Introduce about yourself!",
+        avatarSizeLimit: "Image size should be less than 10MB.",
+        usernameRequired: "Username cannot be empty.",
+        updateProfileFailed: "Failed to update profile. Please try again.",
+        retryLoading: "Retry Loading",
+        favoritesLoadFailed: "Failed to load favorites.",
+        invalidFavoritesData: "Received invalid data from server.",
+        favoritesFoundPrefix: "Found",
+        favoritesFoundSuffix: "items in your profile, but details could not be loaded from AniList."
     },
     details: {
         comment: "Comment",
@@ -77,7 +110,12 @@ export const en = {
         similarAnime: "Similar Anime",
         nothingFound: "Nothing found...",
         writeComment: "Write a comment...",
-        tags: "Tags"
+        tags: "Tags",
+        na: "N/A",
+        dayShort: "d",
+        hourShort: "h",
+        minuteShort: "m",
+        minuteUnit: "min"
     },
     search: {
         placeholder: "Search anime...",
@@ -243,15 +281,47 @@ export const en = {
         popular: "All Time Popular",
         score: "Highest Score"
     },
+    current: {
+        updatedToEpisode: "Updated to episode {episode}",
+        totalEpisodes: "{episodes} episodes in total"
+    },
     home: {
-        trendingNow: "Trending Now"
+        trendingNow: "Trending Now",
+        welcome: "Welcome to AnimeVista",
+        introText: [
+            "Welcome to AnimeVista, where every great anime is worth discovering.",
+            "New releases or old favorites, every encounter feels like meeting again.",
+            "Ratings, comments, and favorites stay in sync with your anime journey.",
+            "Unsure what to watch next, AnimeVista quietly brings you the answer."
+        ]
     },
     common: {
-        loading: "Just a moment... Miku is spinning up the data!",
+        loading: "Just a moment... Miku is spinning up the data!> <",
         translating: "Translating...",
-        error: "Oops! Something went wrong...",
+        error: "Oops! Something went wrong...T T",
         loginToFavorite: "Please login to add to favorites",
         showMore: "show more",
-        showLess: "show less"
+        showLess: "show less",
+        unknown: "Unknown",
+        switchLanguage: "Switch language",
+        langZhShort: "中",
+        langEnShort: "EN",
+        clearAll: "Clear All",
+        weekdays: {
+            Mon: "Monday",
+            Tue: "Tuesday",
+            Wed: "Wednesday",
+            Thu: "Thursday",
+            Fri: "Friday",
+            Sat: "Saturday",
+            Sun: "Sunday"
+        },
+        seasons: {
+            Spring: "Spring",
+            Summer: "Summer",
+            Fall: "Fall",
+            Autumn: "Autumn",
+            Winter: "Winter"
+        }
     }
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   updateFilter,
@@ -21,8 +21,8 @@ const SearchPresenter = () => {
   const filters = useSelector(selectSearchFilters);
   const { results, loading, error, currentPage, totalPages } = useSelector((state) => state.searchResults);
 
-  const previousFiltersRef = useRef(filters);
-  const hasLoadedOnce = useRef(false);
+  const previousFiltersRef = React.useRef(filters);
+  const hasLoadedOnce = React.useRef(false);
 
   const handleFilterChange = (name, value) => {
     dispatch(updateFilter({ name, value }));
@@ -38,10 +38,15 @@ const SearchPresenter = () => {
     dispatch(setSearchPage(newPage));
   };
 
-  const fetchPromiseRef = useRef(null);
-  const totalPromiseRef = useRef(null);
+  const fetchPromiseRef = React.useRef(null);
+  const totalPromiseRef = React.useRef(null);
+  const abortThunkPromise = (promise) => {
+    if (promise && typeof promise.abort === 'function') {
+      promise.abort();
+    }
+  };
 
-  useEffect(() => {
+  React.useEffect(() => {
     const debounceTimer = setTimeout(() => {
       const prev = previousFiltersRef.current;
       const isInitial = !hasLoadedOnce.current;
@@ -60,14 +65,16 @@ const SearchPresenter = () => {
           dispatch(setSearchPage(1));
         }
 
-        if (totalPromiseRef.current) totalPromiseRef.current.abort();
-        totalPromiseRef.current = dispatch(fetchTotalCount(filters));
+        abortThunkPromise(totalPromiseRef.current);
+        const totalFilters = totalFiltersChanged ? { ...filters, page: 1 } : filters;
+        totalPromiseRef.current = dispatch(fetchTotalCount(totalFilters));
       }
 
       // 2. Handle Search Results Fetching
       if (isInitial || totalFiltersChanged || pageChanged) {
-        if (fetchPromiseRef.current) fetchPromiseRef.current.abort();
-        fetchPromiseRef.current = dispatch(fetchSearchResults(filters));
+        abortThunkPromise(fetchPromiseRef.current);
+        const nextFilters = totalFiltersChanged ? { ...filters, page: 1 } : filters;
+        fetchPromiseRef.current = dispatch(fetchSearchResults(nextFilters));
       }
 
       hasLoadedOnce.current = true;
@@ -76,6 +83,8 @@ const SearchPresenter = () => {
 
     return () => {
       clearTimeout(debounceTimer);
+      abortThunkPromise(fetchPromiseRef.current);
+      abortThunkPromise(totalPromiseRef.current);
     };
   }, [filters, dispatch]);
 

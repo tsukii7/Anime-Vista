@@ -1,24 +1,29 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import * as React from 'react';
 import { en } from './en';
 import { zh } from './zh';
 
 const translations = { en, zh };
-const LanguageContext = createContext();
+const LanguageContext = React.createContext();
 
 export function LanguageProvider({ children }) {
-    // default language is english or from localstorage
-    const [lang, setLang] = useState(() => {
-        if (typeof window !== 'undefined') {
-            return localStorage.getItem('app_language') || 'en';
-        }
-        return 'en';
-    });
+    const [lang, setLang] = React.useState('en');
+    const [initialized, setInitialized] = React.useState(false);
 
-    useEffect(() => {
+    React.useLayoutEffect(() => {
         if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('app_language');
+            if (saved === 'zh' || saved === 'en') {
+                setLang(saved);
+            }
+        }
+        setInitialized(true);
+    }, []);
+
+    React.useEffect(() => {
+        if (typeof window !== 'undefined' && initialized) {
             localStorage.setItem('app_language', lang);
         }
-    }, [lang]);
+    }, [lang, initialized]);
 
     const t = (key) => {
         return key.split('.').reduce((obj, k) => obj && obj[k], translations[lang]) || key;
@@ -31,4 +36,4 @@ export function LanguageProvider({ children }) {
     );
 }
 
-export const useLanguage = () => useContext(LanguageContext);
+export const useLanguage = () => React.useContext(LanguageContext);

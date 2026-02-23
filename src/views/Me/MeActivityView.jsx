@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import ActivityCard from './components/ActivityCard';
 import styles from './MeActivityView.module.css';
@@ -6,27 +6,39 @@ import Pagination from '../../components/Pagination';
 import { setActivitiesPage } from '../../models/me/meSlice';
 import LoadingIndicator from "../../components/LoadingIndicator.jsx";
 import { listenToUserActivities } from "../../firebase/db.js";
+import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 const MeActivityView = ({ userId }) => {
-    const [activities, setActivities] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const { t } = useLanguage();
+    const [allActivities, setAllActivities] = React.useState([]);
+    const [loading, setLoading] = React.useState(true);
+    const [error, setError] = React.useState(null);
     const dispatch = useDispatch();
-    const { currentPage, totalPages, itemsPerPage } = useSelector((state) => state.me.activities);
 
-    useEffect(() => {
+    // Page state from Redux
+    const { currentPage, itemsPerPage } = useSelector((state) => state.me.activities);
+
+    const totalPages = Math.max(1, Math.ceil(allActivities.length / itemsPerPage));
+    const activities = React.useMemo(() => {
+        const start = (currentPage - 1) * itemsPerPage;
+        return allActivities.slice(start, start + itemsPerPage);
+    }, [allActivities, currentPage, itemsPerPage]);
+
+    React.useEffect(() => {
         if (!userId) {
             setLoading(false);
+            setAllActivities([]);
             return;
         }
 
+        setLoading(true);
+        setError(null);
+
         const unsubscribe = listenToUserActivities(
             userId,
-            currentPage,
-            itemsPerPage,
             dispatch,
             (activityList) => {
-                setActivities(activityList);
+                setAllActivities(activityList);
                 setLoading(false);
                 setError(null);
             },
@@ -36,8 +48,16 @@ const MeActivityView = ({ userId }) => {
             }
         );
 
-        return () => unsubscribe();
-    }, [userId, currentPage, itemsPerPage, dispatch]);
+        return () => {
+            unsubscribe();
+        };
+    }, [userId, dispatch]);
+
+    React.useEffect(() => {
+        if (currentPage > totalPages) {
+            dispatch(setActivitiesPage(totalPages));
+        }
+    }, [currentPage, totalPages, dispatch]);
 
     const handlePageChange = (newPage) => {
         dispatch(setActivitiesPage(newPage));
@@ -48,23 +68,19 @@ const MeActivityView = ({ userId }) => {
     }
 
     if (error) {
-        return <div className={styles.errorMessage}>
-            <LoadingIndicator
-                isLoading={false}
-                hasError={true}
-                text={error}
-            />
-        </div>;
+        return (
+            <div className={styles.errorMessage}>
+                <LoadingIndicator isLoading={false} hasError={true} text={error} />
+            </div>
+        );
     }
 
-    if (!loading && activities.length === 0) {
-        return <div className={styles.errorMessage}>
-            <LoadingIndicator
-                isLoading={false}
-                hasError={true}
-                text={'No activities yet'}
-            />
-        </div>;
+    if (!loading && allActivities.length === 0) {
+        return (
+            <div className={styles.errorMessage}>
+                <LoadingIndicator isLoading={false} hasError={false} text={t('me.noActivities')} />
+            </div>
+        );
     }
 
     return (
@@ -83,11 +99,13 @@ const MeActivityView = ({ userId }) => {
                     hasLiked={activity.hasLiked}
                 />
             ))}
-            <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-            />
+            {totalPages > 1 && (
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                />
+            )}
         </div>
     );
 };

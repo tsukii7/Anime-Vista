@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchPopularityList, setPopularityPage } from '../../../models/home/popularityListSlice';
 import PopularityListItem from './PopularityListItem';
@@ -13,10 +13,10 @@ const PopularityList = () => {
     const { list, status, currentPage, totalPages, error } = useSelector((state) => state.popularityList);
     const { lang, t } = useLanguage();
 
-    const fetchPromiseRef = useRef(null);
-    const lastPageFetched = useRef(null);
+    const fetchPromiseRef = React.useRef(null);
+    const lastPageFetched = React.useRef(null);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (lastPageFetched.current !== currentPage || status === 'idle') {
             if (fetchPromiseRef.current) fetchPromiseRef.current.abort();
             fetchPromiseRef.current = dispatch(fetchPopularityList({ page: currentPage }));

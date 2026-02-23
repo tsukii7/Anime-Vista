@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -9,10 +9,11 @@ import {
   Alert,
   styled
 } from '@mui/material';
-import { updateUserProfile } from "../../../firebase/db.js";
+import { updateUserProfile, uploadAvatar } from "../../../firebase/db.js";
 import { useLanguage } from '../../../i18n/LanguageContext.jsx';
+import defaultAvatar from '../../../assets/default-avatar.png';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
-// 自定义样式组件
 const StyledDialog = styled(Dialog)({
   '& .MuiDialog-paper': {
     borderRadius: '20px',
@@ -43,24 +44,63 @@ const StyledButton = styled(Button)({
   }
 });
 
+const AvatarPreview = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  marginBottom: '24px',
+  '& img': {
+    width: '100px',
+    height: '100px',
+    borderRadius: '50%',
+    objectFit: 'cover',
+    marginBottom: '8px',
+    border: '2px solid #65558F'
+  }
+});
+
+const HiddenInput = styled('input')({
+  display: 'none',
+});
+
 const EditProfileDialog = ({ open, onClose, userInfo, onProfileUpdate }) => {
   const { t } = useLanguage();
-  const [usernameInput, setUsernameInput] = useState(userInfo?.name || '');
-  const [introductionInput, setIntroductionInput] = useState(userInfo?.introduction || '');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [usernameInput, setUsernameInput] = React.useState(userInfo?.name || '');
+  const [introductionInput, setIntroductionInput] = React.useState(userInfo?.introduction || '');
+  const [avatarPreview, setAvatarPreview] = React.useState(userInfo?.avatar || defaultAvatar);
+  const [avatarFile, setAvatarFile] = React.useState(null);
+  const [error, setError] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (open) {
       setUsernameInput(userInfo?.name || '');
       setIntroductionInput(userInfo?.introduction || '');
+      setAvatarPreview(userInfo?.avatar || defaultAvatar);
+      setAvatarFile(null);
       setError('');
     }
   }, [open, userInfo]);
 
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        setError(t('me.avatarSizeLimit'));
+        return;
+      }
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!usernameInput.trim()) {
-      setError('Username cannot be empty');
+      setError(t('me.usernameRequired'));
       return;
     }
 
@@ -68,10 +108,17 @@ const EditProfileDialog = ({ open, onClose, userInfo, onProfileUpdate }) => {
     setError('');
 
     try {
+      let avatarUrl = userInfo.avatar;
+
+      if (avatarFile) {
+        avatarUrl = await uploadAvatar(userInfo.userId, avatarFile);
+      }
+
       // Update user profile in Firebase
       await updateUserProfile(userInfo.userId, {
         username: usernameInput,
-        introduction: introductionInput
+        introduction: introductionInput,
+        avatar: avatarUrl
       });
 
       // show success
@@ -80,7 +127,7 @@ const EditProfileDialog = ({ open, onClose, userInfo, onProfileUpdate }) => {
       onClose();
     } catch (error) {
       console.error('Error updating profile:', error);
-      setError('Failed to update profile. Please try again.');
+      setError(t('me.updateProfileFailed'));
     } finally {
       setLoading(false);
     }
@@ -119,6 +166,29 @@ const EditProfileDialog = ({ open, onClose, userInfo, onProfileUpdate }) => {
             {error}
           </Alert>
         )}
+
+        <AvatarPreview>
+          <img src={avatarPreview} alt="Avatar Preview" />
+          <label htmlFor="avatar-upload">
+            <HiddenInput
+              accept="image/*"
+              id="avatar-upload"
+              type="file"
+              onChange={handleAvatarChange}
+              disabled={loading}
+            />
+            <StyledButton
+              component="span"
+              variant="outlined"
+              startIcon={<CloudUploadIcon />}
+              disabled={loading}
+              sx={{ color: '#65558F', borderColor: '#65558F' }}
+            >
+              {t('me.changeAvatar') || 'Change Avatar'}
+            </StyledButton>
+          </label>
+        </AvatarPreview>
+
         <StyledTextField
           autoFocus
           margin="dense"

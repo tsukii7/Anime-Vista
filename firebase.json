@@ -13,6 +13,7 @@
     }
   ],
   "hosting": {
+    "site": "anime-vista",
     "public": "build/client",
     "ignore": [
       "firebase.json",

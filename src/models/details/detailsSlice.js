@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
 import anilistApi from '../../utils/anilistApi';
 
 const DETAILS_QUERY = `
@@ -133,14 +134,29 @@ query ($ids: [Int]) {
     }
 }
 `;
+const inFlightDetailsRequests = new Map();
 
 export const fetchAnimeDetails = createAsyncThunk(
     'details/fetchAnimeDetails',
     async (id, { signal }) => {
+        const animeId = Number(id);
+        if (inFlightDetailsRequests.has(animeId)) {
+            try {
+                return await inFlightDetailsRequests.get(animeId);
+            } catch (inFlightError) {
+                const inFlightCancelled = axios.isCancel(inFlightError) ||
+                    inFlightError?.name === 'AbortError' ||
+                    inFlightError?.message?.toLowerCase().includes('cancel');
+                if (!inFlightCancelled || signal?.aborted) {
+                    throw inFlightError;
+                }
+            }
+        }
+        const requestPromise = (async () => {
         // Step 1: Fetch main anime details
         const response = await anilistApi.post('', {
             query: DETAILS_QUERY,
-            variables: { id: Number(id) },
+            variables: { id: animeId },
         }, { signal });
 
         const anime = response.data.data.Media;
@@ -178,11 +194,21 @@ export const fetchAnimeDetails = createAsyncThunk(
                     return node;
                 });
             } catch (error) {
-                console.error('[DetailsSlice] Failed to fetch localized recommendation titles:', error);
+                const isCancelled = error?.name === 'AbortError' || error?.message?.toLowerCase().includes('cancel');
+                if (!isCancelled) {
+                    console.error('[DetailsSlice] Failed to fetch localized recommendation titles:', error);
+                }
             }
         }
 
         return anime;
+        })();
+        inFlightDetailsRequests.set(animeId, requestPromise);
+        try {
+            return await requestPromise;
+        } finally {
+            inFlightDetailsRequests.delete(animeId);
+        }
     }
 );
 
@@ -204,7 +230,11 @@ const detailsSlice = createSlice({
                 state.anime = action.payload;
             })
             .addCase(fetchAnimeDetails.rejected, (state, action) => {
-                if (action.error.name === 'AbortError' || action.meta.aborted) {
+                const isCancelled = action.error.name === 'AbortError' ||
+                    action.error.name === 'CanceledError' ||
+                    action.meta.aborted ||
+                    action.error.message?.toLowerCase().includes('cancel');
+                if (isCancelled) {
                     return;
                 }
                 state.status = 'failed';

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LoginView } from '../views/LoginRegister/LoginView.jsx';
 import { RegisterView } from '../views/LoginRegister/RegisterView.jsx';
 import { useNavigate } from 'react-router';

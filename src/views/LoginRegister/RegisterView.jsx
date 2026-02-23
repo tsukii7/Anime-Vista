@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { register } from '../../models/authentication/loginSlice';
 import "../../styles/LoginRegister.css";
@@ -9,14 +9,14 @@ import { useLanguage } from '../../i18n/LanguageContext';
 export function RegisterView() {
     const dispatch = useDispatch();
     const { t } = useLanguage();
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    const [username, setUsername] = React.useState('');
+    const [email, setEmail] = React.useState('');
+    const [password, setPassword] = React.useState('');
+    const [confirmPassword, setConfirmPassword] = React.useState('');
 
-    const [alertMessage, setAlertMessage] = useState('');
-    const [alertSeverity, setAlertSeverity] = useState('error'); // 'error' | 'success'
-    const [openAlert, setOpenAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = React.useState('');
+    const [alertSeverity, setAlertSeverity] = React.useState('error'); // 'error' | 'success'
+    const [openAlert, setOpenAlert] = React.useState(false);
     const showAlert = (message, severity = 'error') => {
         setAlertMessage(message);
         setAlertSeverity(severity);
@@ -30,33 +30,33 @@ export function RegisterView() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     const getFriendlyError = (firebaseMsg) => {
-        if (!firebaseMsg) return 'Registration failed. Please try again.';
-        if (firebaseMsg.includes('auth/email-already-in-use')) return 'This email is already registered.';
-        if (firebaseMsg.includes('auth/invalid-email')) return 'Invalid email address.';
-        if (firebaseMsg.includes('auth/weak-password')) return 'Password is too weak. Try using a mix of letters and numbers.';
-        if (firebaseMsg.includes('auth/operation-not-allowed')) return 'Email/password accounts are not enabled. Please contact support.';
-        return 'Registration failed. Please check your information and try again.';
+        if (!firebaseMsg) return t('auth.registrationFailed');
+        if (firebaseMsg.includes('auth/email-already-in-use')) return t('auth.emailAlreadyInUse');
+        if (firebaseMsg.includes('auth/invalid-email')) return t('auth.invalidEmail');
+        if (firebaseMsg.includes('auth/weak-password')) return t('auth.weakPassword');
+        if (firebaseMsg.includes('auth/operation-not-allowed')) return t('auth.operationNotAllowed');
+        return t('auth.registrationCheckInput');
     };
 
     async function handleRegister() {
         if (!username || !email || !password || !confirmPassword) {
-            showAlert('Please fill in all fields');
+            showAlert(t('auth.fillAllFields'));
             return;
         }
 
         if (!emailRegex.test(email)) {
-            showAlert('Please enter a valid email address');
+            showAlert(t('auth.enterValidEmail'));
             return;
         }
 
         if (password !== confirmPassword) {
-            showAlert('Passwords do not match');
+            showAlert(t('auth.passwordsDoNotMatch'));
             return;
         }
 
         const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
         if (!passwordRegex.test(password)) {
-            showAlert('Password must be at least 8 characters and include both letters and numbers');
+            showAlert(t('auth.passwordRule'));
             return;
         }
 
@@ -66,10 +66,10 @@ export function RegisterView() {
             if (register.rejected.match(resultAction)) {
                 showAlert(getFriendlyError(resultAction.payload));
             } else {
-                showAlert('Registration successful! Redirecting...', 'success');
+                showAlert(t('auth.registrationSuccessRedirect'), 'success');
             }
         } catch (error) {
-            showAlert('Unexpected error: ' + error.message);
+            showAlert(`${t('auth.unexpectedErrorPrefix')} ${error.message}`);
         }
     }
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import styles from './SearchView.module.css';
 import Filters from './components/Filters';
 import Tags from './components/Tags';

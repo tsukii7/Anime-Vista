@@ -5,7 +5,7 @@ import anilistApi from '../../utils/anilistApi';
 export const fetchSearchResults = createAsyncThunk(
   'searchResults/fetch',
   async (filters, { signal }) => {
-    // 构建GraphQL查询
+    // Build GraphQL query
     const query = `       query ($search: String, $genres: [String], $year: Int, $season: MediaSeason, $format: MediaFormat, $status: MediaStatus, $page: Int, $perPage: Int) {
         Page(page: $page, perPage: $perPage) {
           pageInfo {
@@ -42,7 +42,7 @@ export const fetchSearchResults = createAsyncThunk(
       }
     `;
 
-    // 处理变量，确保格式正确
+    // Process variables to ensure correct format
     const variables = {
       search: filters.search || null,
       genres: filters.genres ? [filters.genres] : null,
@@ -54,7 +54,7 @@ export const fetchSearchResults = createAsyncThunk(
       perPage: filters.perPage || 12
     };
 
-    // 移除空值，避免发送不必要的参数
+    // Remove null values to avoid sending unnecessary parameters
     Object.keys(variables).forEach(key =>
       variables[key] === null && delete variables[key]
     );

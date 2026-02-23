@@ -1,5 +1,4 @@
 // src/components/layout/Pagination.jsx
-import React from 'react';
 import styles from './Pagination.module.css';
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
@@ -11,21 +10,25 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     };
 
     return (
-        <div className={styles.paginationContainer}>
+        <nav className={styles.paginationContainer} aria-label="Pagination">
             <button
                 className={styles.navButton}
                 onClick={() => handleClick(currentPage - 1)}
                 disabled={currentPage === 1}
+                aria-label="Previous page"
             >
                 &lt;
             </button>
 
             <div className={styles.dotsContainer}>
                 {Array.from({ length: totalPages }, (_, i) => (
-                    <div
+                    <button
+                        type="button"
                         key={i}
                         className={`${styles.dot} ${currentPage === i + 1 ? styles.activeDot : ''}`}
                         onClick={() => handleClick(i + 1)}
+                        aria-label={`Page ${i + 1}`}
+                        aria-current={currentPage === i + 1 ? 'page' : undefined}
                     />
                 ))}
             </div>
@@ -34,10 +37,11 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
                 className={styles.navButton}
                 onClick={() => handleClick(currentPage + 1)}
                 disabled={currentPage === totalPages}
+                aria-label="Next page"
             >
                 &gt;
             </button>
-        </div>
+        </nav>
     );
 };
 

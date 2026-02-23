@@ -1,5 +1,5 @@
 // src/views/Home/components/PopularityListItem.jsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import styles from '../HomeView.module.css';
 import { useNavigate } from "react-router";
 import FavoriteBtn from "../../../components/FavoriteBtn.jsx";
@@ -21,7 +21,7 @@ const PopularityListItem = ({ anime }) => {
 
     const genre = anime?.genres?.[0];
     const localizedGenre = t(`search.genreList.${genre}`) !== `search.genreList.${genre}` ? t(`search.genreList.${genre}`) : genre;
-    const category = `${localizedGenre || (lang === 'zh' ? '未知' : 'Unknown')} • ${anime?.startDate?.year}-${anime?.startDate?.month}-${anime?.startDate?.day}`;
+    const category = `${localizedGenre || t('common.unknown')} • ${anime?.startDate?.year}-${anime?.startDate?.month}-${anime?.startDate?.day}`;
 
     const originalDesc = (anime?.description?.length > 1000 ? anime?.description.slice(0, 1000) + '...' : anime?.description) || 'N/A';
     const [translatedDesc, setTranslatedDesc] = useState(originalDesc);

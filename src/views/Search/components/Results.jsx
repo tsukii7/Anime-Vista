@@ -1,4 +1,3 @@
-import React from 'react';
 import ResultCard from './ResultCard';
 import styles from '../SearchView.module.css';
 import LoadingIndicator from "../../../components/LoadingIndicator.jsx";

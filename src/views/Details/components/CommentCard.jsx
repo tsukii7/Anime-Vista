@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import styles from './CommentCard.module.css';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';

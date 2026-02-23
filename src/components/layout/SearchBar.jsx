@@ -1,7 +1,6 @@
 // src/components/layout/SearchBar.jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './SearchBar.css';
-import FilterAltRoundedIcon from '@mui/icons-material/FilterAltRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import { useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
@@ -36,7 +35,12 @@ const SearchBar = () => {
                     if (e.key === 'Enter') handleSearch();
                 }}
             />
-            <button className="search-button" onClick={handleSearch}>
+            <button
+                className="search-button"
+                onClick={handleSearch}
+                disabled={!keyword.trim()}
+                aria-label={t('nav.search')}
+            >
                 <SearchRoundedIcon className={'search-icon'} />
             </button>
         </div>

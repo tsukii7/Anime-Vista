@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
 import Introduction from './components/Introduction';
 import Parameters from './components/Parameters';
 import Characters from './components/Characters';
@@ -18,6 +18,7 @@ import { getDisplayTitle, getChineseTitle } from '../../utils/animeUtils.js';
 
 const DetailsView = ({ anime }) => {
     const { t, lang } = useLanguage();
+    const naText = t('details.na') || 'N/A';
     function capitalizeFirstLetter(string) {
         return string?.charAt(0).toUpperCase() + string?.slice(1).toLowerCase();
     }
@@ -33,8 +34,14 @@ const DetailsView = ({ anime }) => {
 
     const favorites = useUserFavorites();
 
-    const [introduction, setIntroduction] = useState(null);
-    useEffect(() => {
+    const [mounted, setMounted] = React.useState(false);
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const [introduction, setIntroduction] = React.useState(null);
+    React.useEffect(() => {
+        if (!mounted) return;
         setIntroduction({
             id: anime?.id,
             title: getDisplayTitle(anime, lang),
@@ -47,7 +54,8 @@ const DetailsView = ({ anime }) => {
             description: anime?.description,
             tags: filterTags(anime?.tags),
         })
-    }, [anime, favorites, lang]);
+    }, [anime, favorites, lang, mounted]);
+
 
     function animeParams(anime) {
         function getTimeDifferenceString(targetTimestamp) {
@@ -68,7 +76,7 @@ const DetailsView = ({ anime }) => {
             const hours = Math.floor(diff / (1000 * 60 * 60)) % 24;
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-            return `${days}d ${hours}h ${minutes}m`;
+            return `${days}${t('details.dayShort')} ${hours}${t('details.hourShort')} ${minutes}${t('details.minuteShort')}`;
         }
 
         // Airing, Format, Episodes, Episode Duration, Status,
@@ -76,27 +84,28 @@ const DetailsView = ({ anime }) => {
         // Popularity, Favorites, Studios, Producers, Source
         // Hashtag, Genres, Romaji, English, Native, Synonyms
         return [
-            { label: t('details.airing').replace(':', ''), value: getTimeDifferenceString(anime?.nextAiringEpisode?.airingAt) || 'N/A' },
-            { label: t('details.format'), value: anime?.format || 'N/A' },
-            { label: t('details.episodes'), value: anime?.episodes || 'N/A' },
-            { label: t('details.duration'), value: anime?.duration ? `${anime?.duration} min` : 'N/A' },
-            { label: t('details.status'), value: anime?.status ? capitalizeFirstLetter(anime?.status) : 'N/A' },
-            { label: t('details.startDate'), value: anime?.startDate?.year ? `${anime?.startDate.year}-${anime?.startDate.month}-${anime?.startDate.day}` : 'N/A' },
-            { label: t('details.endDate'), value: anime?.endDate?.year ? `${anime?.endDate.year}-${anime?.endDate.month}-${anime?.endDate.day}` : 'N/A' },
-            { label: t('details.season'), value: anime?.season && anime?.seasonYear ? `${capitalizeFirstLetter(anime?.season)} ${anime?.seasonYear}` : 'N/A' },
-            { label: t('details.averageScore'), value: anime?.averageScore ? `${anime?.averageScore}%` : 'N/A' },
-            { label: t('details.meanScore'), value: anime?.meanScore ? `${anime?.meanScore}%` : 'N/A' },
-            { label: t('details.popularity'), value: anime?.popularity || 'N/A' },
-            { label: t('details.favorites'), value: anime?.favourites || 'N/A' },
-            { label: t('details.studios'), value: anime?.studios?.nodes.slice(0, 1)?.map(studio => studio.name).join('\n') || 'N/A' },
-            { label: t('details.producers'), value: anime?.studios?.nodes.slice(1)?.map(producer => producer.name).join('\n') || 'N/A' },
-            { label: t('details.source'), value: anime?.source ? capitalizeFirstLetter(anime?.source) : 'N/A' },
-            { label: t('details.hashtag'), value: anime?.hashtag || 'N/A' },
-            { label: t('details.genresLabel'), value: anime?.genres?.map(g => t(`search.genreList.${g}`) !== `search.genreList.${g}` ? t(`search.genreList.${g}`) : g).join('\n') || 'N/A' },
-            { label: t('details.romaji'), value: anime?.title?.romaji || 'N/A' },
-            { label: t('details.english'), value: anime?.title?.english || 'N/A' },
-            { label: t('details.native'), value: anime?.title?.native || 'N/A' },
-            { label: t('details.synonyms'), value: anime?.synonyms?.join('\n') || 'N/A' },
+            { label: t('details.airing').replace(':', ''), value: (mounted ? getTimeDifferenceString(anime?.nextAiringEpisode?.airingAt) : null) || naText },
+
+            { label: t('details.format'), value: anime?.format || naText },
+            { label: t('details.episodes'), value: anime?.episodes || naText },
+            { label: t('details.duration'), value: anime?.duration ? `${anime?.duration} ${t('details.minuteUnit')}` : naText },
+            { label: t('details.status'), value: anime?.status ? capitalizeFirstLetter(anime?.status) : naText },
+            { label: t('details.startDate'), value: anime?.startDate?.year ? `${anime?.startDate.year}-${anime?.startDate.month}-${anime?.startDate.day}` : naText },
+            { label: t('details.endDate'), value: anime?.endDate?.year ? `${anime?.endDate.year}-${anime?.endDate.month}-${anime?.endDate.day}` : naText },
+            { label: t('details.season'), value: anime?.season && anime?.seasonYear ? `${capitalizeFirstLetter(anime?.season)} ${anime?.seasonYear}` : naText },
+            { label: t('details.averageScore'), value: anime?.averageScore ? `${anime?.averageScore}%` : naText },
+            { label: t('details.meanScore'), value: anime?.meanScore ? `${anime?.meanScore}%` : naText },
+            { label: t('details.popularity'), value: anime?.popularity || naText },
+            { label: t('details.favorites'), value: anime?.favourites || naText },
+            { label: t('details.studios'), value: anime?.studios?.nodes.slice(0, 1)?.map(studio => studio.name).join('\n') || naText },
+            { label: t('details.producers'), value: anime?.studios?.nodes.slice(1)?.map(producer => producer.name).join('\n') || naText },
+            { label: t('details.source'), value: anime?.source ? capitalizeFirstLetter(anime?.source) : naText },
+            { label: t('details.hashtag'), value: anime?.hashtag || naText },
+            { label: t('details.genresLabel'), value: anime?.genres?.map(g => t(`search.genreList.${g}`) !== `search.genreList.${g}` ? t(`search.genreList.${g}`) : g).join('\n') || naText },
+            { label: t('details.romaji'), value: anime?.title?.romaji || naText },
+            { label: t('details.english'), value: anime?.title?.english || naText },
+            { label: t('details.native'), value: anime?.title?.native || naText },
+            { label: t('details.synonyms'), value: anime?.synonyms?.join('\n') || naText },
         ];
     }
 
@@ -110,15 +119,15 @@ const DetailsView = ({ anime }) => {
 
         return {
             rating: {
-                score: anime?.averageScore || 'N/A',
+                score: anime?.averageScore || naText,
                 prizes: anime?.rankings?.filter(ranking => ranking.type === 'RATED').map(rankingCB) || [],
             },
             popularity: {
-                score: anime?.popularity || 'N/A',
+                score: anime?.popularity || naText,
                 prizes: anime?.rankings?.filter(ranking => ranking.type === 'POPULAR').map(rankingCB) || [],
             },
             favorites: {
-                score: anime?.favourites || 'N/A',
+                score: anime?.favourites || naText,
             }
         }
     }
@@ -132,7 +141,7 @@ const DetailsView = ({ anime }) => {
                 nativeName = fullName
                 fullName = ''
             } else if (!nativeName && !fullName) {
-                nativeName = 'N/A'
+                nativeName = naText
                 fullName = ''
             }
 
@@ -153,7 +162,7 @@ const DetailsView = ({ anime }) => {
         function staffEdgeCB(edge) {
             return {
                 role: edge.role,
-                name: edge.node.name.full || 'N/A',
+                name: edge.node.name.full || naText,
                 image: edge.node.image.large,
             }
         }
@@ -161,8 +170,8 @@ const DetailsView = ({ anime }) => {
         return anime?.staff.edges?.map(staffEdgeCB) || []
     }
 
-    const [similarities, setSimilarities] = useState([]);
-    useEffect(() => {
+    const [similarities, setSimilarities] = React.useState([]);
+    React.useEffect(() => {
         const nodes = anime?.recommendations?.nodes || [];
         const results = nodes.filter(node => node.mediaRecommendation).map((node) => ({
             ...node,
@@ -171,8 +180,8 @@ const DetailsView = ({ anime }) => {
         setSimilarities(results);
     }, [anime, favorites]);
 
-    const [comments, setComments] = useState(null);
-    useEffect(() => {
+    const [comments, setComments] = React.useState(null);
+    React.useEffect(() => {
         const unsubscribe = listenToComments(anime?.id, (commentList) => {
             setComments({
                 userInfo: { isLogin: isLoggedIn() },

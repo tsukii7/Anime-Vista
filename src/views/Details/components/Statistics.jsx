@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './Statistics.module.css';
 import { FaStar, FaRegHeart } from 'react-icons/fa';
 import { MdShowChart } from 'react-icons/md';

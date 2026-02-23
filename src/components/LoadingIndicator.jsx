@@ -1,4 +1,3 @@
-import React from 'react';
 import '../styles/global.css';
 import miku_loading from '../assets/miku-loading.gif'
 import miku_running from '../assets/miku-running.gif'

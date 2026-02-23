@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import styles from './Comments.module.css';
 import CommentCard from './CommentCard';
 import { addComment } from "../../../firebase/db.js";
@@ -18,7 +18,7 @@ const Comments = ({ animeId, comments }) => {
         addComment(getCurrentUser().userId, animeId, input).then(() => setInput(''))
     };
 
-    // 加载更多评论
+    // Load more comments
     const observerCallback = useCallback(
         (entries) => {
             const entry = entries[0];
@@ -43,7 +43,7 @@ const Comments = ({ animeId, comments }) => {
             if (currentRef) {
                 observer.observe(currentRef);
             }
-        }, 100); // 延迟绑定，确保 DOM 出现
+        }, 100); // Delayed binding to ensure DOM is ready
 
         return () => {
             clearTimeout(timeoutId);
@@ -94,7 +94,7 @@ const Comments = ({ animeId, comments }) => {
                     />
                 ))}
 
-                {/* 观察目标元素 */}
+                {/* Observation target element */}
                 <div ref={bottomRef} className={styles.bottomMarker} />
             </div>
         </div>

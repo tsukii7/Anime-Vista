@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './Details.module.css';
 import { useLanguage } from '../../../i18n/LanguageContext.jsx';
 

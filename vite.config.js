@@ -7,12 +7,33 @@ export default defineConfig({
     resolve: {
         dedupe: ['react', 'react-dom'],
     },
+    build: {
+        chunkSizeWarningLimit: 1200,
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (id.includes('node_modules')) {
+                        if (id.includes('firebase')) return 'vendor-firebase';
+                        if (id.includes('@mui') || id.includes('@emotion')) return 'vendor-mui';
+                        if (id.includes('react-router')) return 'vendor-router';
+                        if (id.includes('react-icons')) return 'vendor-icons';
+                        if (id.includes('opencc-js')) return 'vendor-opencc';
+                        if (id.includes('@reduxjs') || id.includes('react-redux')) return 'vendor-redux';
+                        if (id.includes('axios') || id.includes('graphql-request')) return 'vendor-network';
+                        if (id.includes('react')) return 'vendor-react';
+                        return 'vendor-misc';
+                    }
+                },
+            },
+        },
+    },
     server: {
         proxy: {
             '/anilist-proxy': {
                 target: 'https://trace.moe',
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/anilist-proxy/, '/anilist/'),
+                secure: false,
             },
         },
     },

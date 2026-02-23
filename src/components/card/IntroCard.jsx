@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './IntroCard.module.css';
 import { useNavigate } from "react-router";
 import { StarIcon, HeartIcon } from "./IntroCardComponents.jsx";

@@ -3,14 +3,14 @@
     display: flex;
     flex-direction: column;
     background-color: #E7E0EC;
-    padding: 24px;
+    padding: 36px;
     border-radius: 16px;
     width: 100%;
-    min-height: 268px;
+    min-height: 320px;
     font-family: sans-serif;
     color: #111827;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    gap: 5px;
+    gap: 12px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     box-sizing: border-box;
 }
@@ -32,7 +32,7 @@
     flex-direction: column;
     width: 100%;
     height: auto;
-    gap: 10px;
+    gap: 16px;
 }
 
 .avatar {
@@ -84,7 +84,7 @@
 }
 
 .topRow {
-    margin-bottom: 100px;
+    margin-bottom: 190px;
     text-align: left;
 }
 
@@ -104,9 +104,9 @@
     grid-template-columns: repeat(2, 1fr);
     grid-auto-rows: 1fr;
     gap: 10%;
-    width: 90%;
+    width: 96%;
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 20px auto 0 auto;
 }
 
 .developerCardContainer {

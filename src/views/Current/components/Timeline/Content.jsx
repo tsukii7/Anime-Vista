@@ -1,9 +1,10 @@
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import BriefCard from './BriefCard';
 import style from "../../CurrentView.module.css";
 
-export default function Content({ animeListByDate, onRefsReady }) {
+export default function Content({ animeListByDate, onRefsReady, favoriteIds }) {
     const refs = useRef([]);
+    const favoriteSet = new Set((favoriteIds || []).map((id) => Number(id)));
 
     useEffect(() => {
         const observer = new ResizeObserver(() => {
@@ -45,6 +46,7 @@ export default function Content({ animeListByDate, onRefsReady }) {
                 time={anime?.airingAt}
                 id={anime?.id}
                 anime={anime?.anime}
+                isFavorite={favoriteSet.has(Number(anime?.id))}
             />
         );
     }

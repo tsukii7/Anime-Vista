@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './StaffCard.module.css';
 
 const StaffCard = ({ name, role, image }) => {

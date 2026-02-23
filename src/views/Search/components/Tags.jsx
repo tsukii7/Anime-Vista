@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from '../SearchView.module.css';
 import { useLanguage } from '../../../i18n/LanguageContext.jsx';
 import TranslatedTag from '../../../components/TranslatedTag.jsx';
@@ -23,7 +22,7 @@ const Tags = ({ filters, onClear, onRemoveFilter }) => {
     year: t('search.year') || 'Year'
   };
 
-  // 过滤出有效的筛选条件
+  // Filter out valid filter criteria
   const activeFilters = Object.entries(filters)
     .filter(([key, value]) =>
       value && value !== '' && key !== 'page' && key !== 'perPage'
@@ -47,7 +46,7 @@ const Tags = ({ filters, onClear, onRemoveFilter }) => {
           style={{ backgroundColor: '#e0e0e0', color: '#333', cursor: 'pointer' }}
           onClick={onClear}
         >
-          <span>{t('search.clear') || 'Clear All'}</span>
+          <span>{t('common.clearAll')}</span>
         </div>
       )}
     </div>

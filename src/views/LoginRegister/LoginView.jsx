@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { signInWithGoogle, signInWithEmail, forgetPassword } from '../../models/authentication/loginSlice';
 import { FcGoogle } from 'react-icons/fc';
@@ -10,10 +10,10 @@ import Alert from '@mui/material/Alert';
 export function LoginView() {
     const dispatch = useDispatch();
     const { t } = useLanguage();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [alertMessage, setAlertMessage] = useState('');
-    const [openAlert, setOpenAlert] = useState(false);
+    const [email, setEmail] = React.useState('');
+    const [password, setPassword] = React.useState('');
+    const [alertMessage, setAlertMessage] = React.useState('');
+    const [openAlert, setOpenAlert] = React.useState(false);
 
     const showAlert = (message) => {
         setAlertMessage(message);
@@ -25,18 +25,18 @@ export function LoginView() {
     };
 
     const getFriendlyLoginError = (firebaseMsg) => {
-        if (!firebaseMsg) return 'Login failed. Please try again.';
-        if (firebaseMsg.includes('auth/invalid-credential')) return 'Incorrect email or password.';
-        if (firebaseMsg.includes('auth/user-disabled')) return 'This account has been disabled.';
-        if (firebaseMsg.includes('auth/user-not-found')) return 'No account found with this email.';
-        if (firebaseMsg.includes('auth/wrong-password')) return 'Incorrect password.';
-        return 'Login failed. Please check your credentials.';
+        if (!firebaseMsg) return t('auth.loginFailed');
+        if (firebaseMsg.includes('auth/invalid-credential')) return t('auth.invalidCredential');
+        if (firebaseMsg.includes('auth/user-disabled')) return t('auth.userDisabled');
+        if (firebaseMsg.includes('auth/user-not-found')) return t('auth.userNotFound');
+        if (firebaseMsg.includes('auth/wrong-password')) return t('auth.wrongPassword');
+        return t('auth.loginCheckCredentials');
     };
 
 
     const handleLogin = async () => {
         if (!email || !password) {
-            showAlert('Please enter both email and password');
+            showAlert(t('auth.enterEmailAndPassword'));
             return;
         }
 
@@ -47,7 +47,7 @@ export function LoginView() {
                 showAlert(getFriendlyLoginError(resultAction.payload));
             }
         } catch (error) {
-            showAlert('Unexpected error: ' + error.message);
+            showAlert(`${t('auth.unexpectedErrorPrefix')} ${error.message}`);
             console.error(error);
         }
     };
@@ -55,10 +55,10 @@ export function LoginView() {
 
     const handleForgetPassword = () => {
         if (!email) {
-            showAlert('Please enter your email');
+            showAlert(t('auth.enterEmail'));
         } else {
             dispatch(forgetPassword(email));
-            showAlert('Password reset email has been sent');
+            showAlert(t('auth.passwordResetSent'));
         }
     };
 

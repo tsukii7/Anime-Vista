@@ -1,5 +1,4 @@
 // src/views/Rank/components/RankingCard.jsx
-import React from 'react';
 import styles from '../RankView.module.css';
 import { useNavigate } from "react-router";
 import { useLanguage } from '../../../i18n/LanguageContext.jsx';

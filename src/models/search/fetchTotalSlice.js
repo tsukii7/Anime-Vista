@@ -1,6 +1,9 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import anilistApi from '../../utils/anilistApi';
 
+const TOTAL_CACHE_TTL_MS = 60 * 1000;
+const totalCountCache = new Map();
+
 export const fetchTotalCount = createAsyncThunk(
   'searchResults/fetchTotalCount',
   async (filters, { signal }) => {
@@ -30,12 +33,18 @@ export const fetchTotalCount = createAsyncThunk(
       status: filters.status || null,
     };
 
-    // 删除空值字段
+    // Delete empty fields
     Object.keys(variablesBase).forEach(
       (key) => variablesBase[key] === null && delete variablesBase[key]
     );
+    const cacheKey = JSON.stringify(variablesBase);
+    const now = Date.now();
+    const cached = totalCountCache.get(cacheKey);
+    if (cached && cached.expiresAt > now) {
+      return cached.total;
+    }
 
-    let totalIds = [];
+    let total = 0;
     let page = 1;
     const perPage = 50;
     let hasNextPage = true;
@@ -48,22 +57,23 @@ export const fetchTotalCount = createAsyncThunk(
           variables,
         }, { signal });
 
-        const data = response.data;
-        const media = data?.data?.Page?.media ?? [];
-        const pageInfo = data?.data?.Page?.pageInfo;
-
-        totalIds = totalIds.concat(media.map((m) => m?.id));
-        hasNextPage = pageInfo?.hasNextPage;
+        const pageData = response?.data?.data?.Page;
+        const media = pageData?.media ?? [];
+        total += media.length;
+        hasNextPage = Boolean(pageData?.pageInfo?.hasNextPage);
         page++;
-        if (page > 3) break;
       } catch (error) {
         if (error.name === 'AbortError' || error.message === 'canceled') {
-          return totalIds.length;
+          return total;
         }
         throw error;
       }
     }
 
-    return totalIds.length;
+    totalCountCache.set(cacheKey, {
+      total,
+      expiresAt: now + TOTAL_CACHE_TTL_MS,
+    });
+    return total;
   }
 );

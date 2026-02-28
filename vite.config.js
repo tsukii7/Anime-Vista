@@ -13,6 +13,7 @@ export default defineConfig({
             output: {
                 manualChunks(id) {
                     if (id.includes('node_modules')) {
+                        if (/[/\\](react|react-dom|scheduler)[/\\]/.test(id)) return;
                         if (id.includes('firebase')) return 'vendor-firebase';
                         if (id.includes('@mui') || id.includes('@emotion')) return 'vendor-mui';
                         if (id.includes('react-router')) return 'vendor-router';
@@ -20,7 +21,6 @@ export default defineConfig({
                         if (id.includes('opencc-js')) return 'vendor-opencc';
                         if (id.includes('@reduxjs') || id.includes('react-redux')) return 'vendor-redux';
                         if (id.includes('axios') || id.includes('graphql-request')) return 'vendor-network';
-                        if (id.includes('react')) return 'vendor-react';
                         return 'vendor-misc';
                     }
                 },

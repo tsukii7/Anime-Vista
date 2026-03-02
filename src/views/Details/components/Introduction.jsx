@@ -58,9 +58,10 @@ const Introduction = ({ introduction, anime }) => {
         if (!Number.isFinite(nextEpisode)) return '';
         if (nextEpisode <= 0) return '';
 
-        if (nextEpisode === 1) return t('details.airing') || 'No episode available';
+        if (nextEpisode === 1) return t('details.airing') || 'Coming Soon';
 
-        return `${t('details.airing') || 'Update to '} ${nextEpisode - 1} ${t('details.episodes') || 'episode'}`;
+        const template = t('details.updatedToEp') || `Updated to Ep ${nextEpisode - 1}`;
+        return template.replace('{n}', nextEpisode - 1);
     }
 
     return (

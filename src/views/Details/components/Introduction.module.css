@@ -2,7 +2,6 @@
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    padding-top: 24px;
     background-color: white;
 }
 
@@ -94,4 +93,52 @@
     border-radius: 9999px;
     font-size: 14px;
     font-weight: 500;
+}
+
+/* ── Mobile ── */
+@media (max-width: 767px) {
+    .container {
+        overflow-x: hidden;
+        min-width: 0;
+    }
+
+    .header {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .title {
+        font-size: 20px;
+    }
+
+    .altTitle {
+        font-size: 15px;
+    }
+
+    .content {
+        flex-direction: column;
+        gap: 20px;
+        overflow-x: hidden;
+        min-width: 0;
+    }
+
+    .cover {
+        width: 180px;
+        height: 258px;
+        align-self: center;
+    }
+
+    .introduction {
+        font-size: 14px;
+        word-break: break-word;
+    }
+
+    .tags {
+        gap: 8px;
+    }
+
+    .tag {
+        padding: 6px 14px;
+        font-size: 12px;
+    }
 }

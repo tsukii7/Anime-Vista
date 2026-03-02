@@ -21,4 +21,5 @@
 .value {
     margin-left: 2px;
     white-space: pre-wrap;
+    word-break: break-word;
 }

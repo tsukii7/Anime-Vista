@@ -208,3 +208,57 @@
   height: 1px;
   background-color: var(--Schemes-Outline-Variant, #CAC4D0);
 }
+
+/* ── Mobile ── */
+@media (max-width: 767px) {
+  .mainContainer {
+    border-radius: 0;
+    min-width: 0;
+  }
+
+  .backgroundImage {
+    height: 140px;
+  }
+
+  .userProfileSection {
+    left: 16px;
+    top: 30px;
+    gap: 16px;
+  }
+
+  .userAvatar {
+    width: 64px;
+    height: 64px;
+  }
+
+  .userGreeting {
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .userDetails {
+    font-size: 13px;
+  }
+
+  .editButtonContainer {
+    right: 12px;
+    top: 36px;
+    padding: 6px 12px;
+  }
+
+  .editText {
+    font-size: 12px;
+  }
+
+  .tabNavigation {
+    top: 140px;
+  }
+
+  .tabLabel {
+    font-size: 15px;
+  }
+
+  .aboutView {
+    padding: 20px 16px;
+  }
+}

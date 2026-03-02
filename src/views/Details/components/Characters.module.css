@@ -40,8 +40,19 @@
 
 .grid {
     display: grid;
-    /* Automatically adjust cards per row */
-    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
     justify-items: center;
+}
+
+/* ── Mobile ── */
+@media (max-width: 767px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .title {
+        font-size: 18px;
+    }
 }

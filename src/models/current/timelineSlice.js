@@ -68,26 +68,27 @@ export const fetchAnimeTimeLine = createAsyncThunk(
         let allAnime = [];
 
         try {
-            for (let page = 1; page <= 2; page++) {
-                if (signal.aborted) break;
+            let currentPage = 1;
+            let hasNextPage = true;
+            while (hasNextPage && !signal.aborted) {
                 const response = await anilistApi.post('', {
                     query,
-                    variables: { page, perPage },
+                    variables: { page: currentPage, perPage },
                 }, { signal });
 
                 const media = response.data.data.Page.media;
-                const hasNextPage = response.data.data.Page.pageInfo.hasNextPage;
-
-                if (!hasNextPage) break;
-                allAnime = allAnime?.concat(media);
+                allAnime = allAnime.concat(media);
+                hasNextPage = response.data.data.Page.pageInfo.hasNextPage;
+                currentPage++;
             }
-            const seasonAnimeList = allAnime
+            const seasonAnimeList = allAnime;
             const maxDate = findMaxDate(seasonAnimeList);
+            const grouped = groupAnimeByDate(seasonAnimeList, maxDate);
             return {
                 seasonAnime: seasonAnimeList,
-                groupedAnime: groupAnimeByDate(seasonAnimeList, maxDate),
-                currentPage: page,
-                totalPages: Math.ceil(seasonAnimeList.length / 15),
+                groupedAnime: grouped,
+                currentPage: 1,
+                totalPages: Math.max(1, Math.ceil(grouped.length / 10)),
             };
         } catch (error) {
             console.error('Error fetching anime timeline:', error);

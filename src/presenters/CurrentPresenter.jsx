@@ -40,7 +40,6 @@ export default function CurrentPresenter() {
     const currentStatus = isTimeline ? timelineStatus : listStatus;
     const currentError = isTimeline ? timelineError : listError;
     const currentPage = isTimeline ? timelineCurrentPage : listCurrentPage;
-    const totalPages = isTimeline ? timelineTotalPages : listTotalPages;
     const setPage = isTimeline ? setTimelinePage : setListPage;
 
     const timelinePromiseRef = useRef(null);
@@ -88,18 +87,27 @@ export default function CurrentPresenter() {
         };
     }, []);
 
+    const [effectiveTimelineTotalPages, setEffectiveTimelineTotalPages] = useState(timelineTotalPages);
+
     useEffect(() => {
         if (isTimeline && groupedAnime?.length > 0) {
             const animePerPage = 10;
-            const start = (currentPage - 1) * animePerPage;
-            const pageItems = groupedAnime?.slice(start, start + animePerPage) || [];
+
             if (!showFavoritesOnly) {
+                const pages = Math.max(1, Math.ceil(groupedAnime.length / animePerPage));
+                setEffectiveTimelineTotalPages(pages);
+                const safePage = Math.min(currentPage, pages);
+                const start = (safePage - 1) * animePerPage;
+                const pageItems = groupedAnime.slice(start, start + animePerPage);
                 setAnimeListByDate(pageItems);
+                if (safePage !== currentPage) {
+                    dispatch(setTimelinePage(safePage));
+                }
                 return;
             }
 
             const favoriteSet = new Set((favorites || []).map((id) => Number(id)));
-            const filteredByFavorite = pageItems
+            const allFiltered = groupedAnime
                 .map((day) => ({
                     ...day,
                     animes: (day?.animes || []).filter((anime) =>
@@ -108,9 +116,16 @@ export default function CurrentPresenter() {
                 }))
                 .filter((day) => day.animes.length > 0);
 
-            setAnimeListByDate(filteredByFavorite);
+            const pages = Math.max(1, Math.ceil(allFiltered.length / animePerPage));
+            setEffectiveTimelineTotalPages(pages);
+            const safePage = Math.min(currentPage, pages);
+            const start = (safePage - 1) * animePerPage;
+            setAnimeListByDate(allFiltered.slice(start, start + animePerPage));
+            if (safePage !== currentPage) {
+                dispatch(setTimelinePage(safePage));
+            }
         }
-    }, [groupedAnime, currentPage, isTimeline, showFavoritesOnly, favorites]);
+    }, [groupedAnime, currentPage, isTimeline, showFavoritesOnly, favorites, dispatch]);
 
     function onPageChange(newPage) {
         dispatch(setPage(newPage));
@@ -127,7 +142,7 @@ export default function CurrentPresenter() {
             timePointPositions={timePointPositions}
             onRefsReady={handleRefsReady}
             currentPage={currentPage}
-            totalPages={totalPages}
+            totalPages={isTimeline ? effectiveTimelineTotalPages : listTotalPages}
             status={currentStatus}
             onPageChange={onPageChange}
             viewOption={viewOption}

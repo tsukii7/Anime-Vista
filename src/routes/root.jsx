@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState, useCallback } from 'react';
 import {
     Links,
     Meta,
@@ -15,6 +15,10 @@ import { LanguageProvider } from '../i18n/LanguageContext';
 import '../styles/global.css';
 
 export function Layout({ children }) {
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const toggleSidebar = useCallback(() => setSidebarOpen(prev => !prev), []);
+    const closeSidebar = useCallback(() => setSidebarOpen(false), []);
+
     return (
         <LanguageProvider>
             <Provider store={store}>
@@ -25,9 +29,16 @@ export function Layout({ children }) {
                     </head>
                     <body>
                         <div className="app-container">
-                            <TopBar />
+                            <TopBar onMenuClick={toggleSidebar} />
                             <div className="main-layout">
-                                <SideBar />
+                                <SideBar open={sidebarOpen} onClose={closeSidebar} />
+                                {sidebarOpen && (
+                                    <div
+                                        className="sidebar-overlay"
+                                        onClick={closeSidebar}
+                                        aria-hidden="true"
+                                    />
+                                )}
                                 <main className="page-content">
                                     {children}
                                     <ScrollRestoration />

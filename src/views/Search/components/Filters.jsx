@@ -59,7 +59,7 @@ const Filters = ({ filters, onFilterChange }) => {
               '&:hover fieldset': { borderColor: '#65558F' },
               '&.Mui-focused fieldset': { borderColor: '#65558F', borderWidth: '2px', boxShadow: '0 0 0 4px rgba(101, 85, 143, 0.15)' }
             },
-            '& .MuiSelect-select': { padding: '15px' }
+            '& .MuiSelect-select': { padding: '8px 12px' }
           }}>
             <Select
               value={filters[field] || ''}

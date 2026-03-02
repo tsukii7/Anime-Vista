@@ -71,7 +71,8 @@ export const en = {
     details: {
         comment: "Comment",
         send: "Send",
-        airing: "Airing: ",
+        airing: "Next Airing",
+        updatedToEp: "Updated to Ep {n}",
         releasing: "Releasing",
         finished: "Finished",
         cancelled: "Cancelled",
@@ -119,6 +120,7 @@ export const en = {
     },
     search: {
         placeholder: "Search anime...",
+        filters: "Filters",
         genres: "Genres",
         year: "Year",
         season: "Season",

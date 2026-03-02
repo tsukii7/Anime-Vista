@@ -3,7 +3,7 @@
     justify-content: center;
     align-items: center;
     gap: 24px;
-    padding-bottom: 10px;
+    padding-bottom: 0px;
 }
 
 .navButton {
@@ -55,4 +55,29 @@
 
 .activeDot {
     opacity: 1;
+}
+
+/* ── Mobile ── */
+@media (max-width: 767px) {
+    .paginationContainer {
+        gap: 14px;
+        padding-bottom: 8px;
+    }
+
+    .navButton {
+        width: 34px;
+        height: 34px;
+        font-size: 18px;
+        border-radius: 10px;
+    }
+
+    .dotsContainer {
+        padding: 8px 14px;
+        gap: 8px;
+    }
+
+    .dot {
+        width: 10px;
+        height: 10px;
+    }
 }

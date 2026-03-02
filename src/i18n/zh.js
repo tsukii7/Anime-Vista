@@ -71,7 +71,8 @@ export const zh = {
     details: {
         comment: "评论",
         send: "发送",
-        airing: "即将播出：第",
+        airing: "即将播出",
+        updatedToEp: "更新至第 {n} 集",
         releasing: "连载中",
         finished: "已完结",
         cancelled: "已取消",
@@ -119,6 +120,7 @@ export const zh = {
     },
     search: {
         placeholder: "搜索动漫...",
+        filters: "筛选",
         genres: "题材",
         year: "年份",
         season: "季度",

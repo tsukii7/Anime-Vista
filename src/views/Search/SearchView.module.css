@@ -3,24 +3,68 @@
     margin: 0 auto;
     background: white;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 100%;
+    box-sizing: border-box;
+}
+
+.searchRow {
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+    flex-wrap: nowrap;
+}
+
+.searchGroup {
+    position: relative;
+    min-width: 200px;
+    flex-shrink: 0;
+}
+
+.searchGroup label {
+    display: block;
+    color: #65558F;
+    font-family: 'Inter', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+.desktopFilters {
+    flex: 1;
+    min-width: 0;
+}
+
+.filtersToggle {
+    display: none;
+}
+
+.filtersSection {
+    display: none;
+}
+
+.resultsWrapper {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
 }
 
 .searchHeader {
     display: flex;
     gap: 16px;
-    /* Unified spacing of 16px */
-    align-items: baseline;
-    flex-wrap: wrap;
-    /* Allow line wrapping */
+    align-items: flex-end;
+    flex-wrap: nowrap;
 }
-
 
 .filterGroup {
     position: relative;
-    width: 200px;
-    /* Unified container width */
-    min-width: 200px;
-    /* Prevent flex compression */
+    flex: 1;
+    min-width: 120px;
 }
 
 .searchInput,
@@ -28,11 +72,11 @@
 .filterGroup select {
     box-sizing: border-box;
     width: 100%;
-    height: 56px;
+    height: 44px;
     border: 2px solid #65558F;
     border-radius: 8px;
-    padding: 12px;
-    font-size: 16px;
+    padding: 8px 12px;
+    font-size: 15px;
     color: #49454f;
     background-color: #FEF7FF;
     line-height: 1.2;
@@ -60,7 +104,7 @@
     display: block;
     color: #65558F;
     font-family: 'Inter', sans-serif;
-    font-size: 24px;
+    font-size: 16px;
     font-weight: 600;
     margin-bottom: 7px;
 }
@@ -97,7 +141,6 @@
     grid-template-columns: repeat(auto-fill, minmax(384px, 1fr));
     gap: 21px;
     padding: 16px 0;
-    min-height: 500px;
     justify-items: center;
 }
 
@@ -123,10 +166,74 @@
 }
 
 .statusMessage {
-    height: 65vh;
+    flex: 1;
+    min-height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-@media (max-width: 1000px) {
+/* ── Tablet ── */
+@media (max-width: 1023px) {
+    .container {
+        height: 100%;
+    }
+
+    .searchRow {
+        flex-wrap: wrap;
+    }
+
+    .searchGroup {
+        flex: 1;
+        max-width: none;
+    }
+
+    .desktopFilters {
+        display: none;
+    }
+
+    .filtersToggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0 16px;
+        height: 44px;
+        border: 2px solid #65558F;
+        border-radius: 8px;
+        background: #FEF7FF;
+        color: #65558F;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .filtersToggle:hover {
+        background: rgba(101, 85, 143, 0.08);
+    }
+
+    .filtersToggleActive {
+        background: rgba(232, 222, 248, 0.55);
+    }
+
+    .filtersSection {
+        display: block;
+        max-height: 0;
+        overflow: hidden;
+        margin-top: 0;
+        transition: max-height 0.3s ease, margin-top 0.3s ease;
+    }
+
+    .filtersSectionExpanded {
+        max-height: 600px;
+        margin-top: 16px;
+    }
+
+    .searchHeader {
+        flex-wrap: wrap;
+    }
+
     .filterGroup {
         width: 100%;
         min-width: 100%;
@@ -134,5 +241,102 @@
 
     .searchInput {
         width: 100%;
+    }
+
+    .resultsWrapper {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+    }
+
+    .resultsGrid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    }
+
+    .statusMessage {
+        min-height: 200px;
+    }
+}
+
+/* ── Mobile ── */
+@media (max-width: 767px) {
+    .container {
+        padding: 12px;
+        height: 100%;
+        min-height: 100%;
+    }
+
+    .searchRow {
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .searchGroup {
+        flex: 1;
+        max-width: none;
+    }
+
+    .searchGroup label {
+        font-size: 18px;
+    }
+
+    .desktopFilters {
+        display: none;
+    }
+
+    .filtersToggle {
+        height: 40px;
+        font-size: 13px;
+        padding: 0 12px;
+    }
+
+    .searchHeader {
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .filterGroup {
+        width: 100%;
+        min-width: 100%;
+    }
+
+    .filterGroup label {
+        font-size: 16px;
+    }
+
+    .searchInput,
+    .yearInput,
+    .filterGroup select {
+        height: 40px;
+        font-size: 14px;
+    }
+
+    .resultsWrapper {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+    }
+
+    .resultsGrid {
+        grid-template-columns: 1fr;
+        gap: clamp(10px, 3vw, 16px);
+        row-gap: clamp(12px, 3.5vw, 18px);
+    }
+
+    .cardContainer {
+        width: 100%;
+        height: auto;
+        min-height: 160px;
+    }
+
+    .statusMessage {
+        height: auto;
+        min-height: 200px;
+        flex: none;
+    }
+
+    .tag {
+        font-size: 12px;
+        padding: 6px 10px;
     }
 }

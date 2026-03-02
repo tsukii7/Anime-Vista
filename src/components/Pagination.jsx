@@ -6,6 +6,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     const handleClick = (page) => {
         if (page !== currentPage && page >= 1 && page <= totalPages) {
             onPageChange(page);
+            document.querySelector('.page-content')?.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
 

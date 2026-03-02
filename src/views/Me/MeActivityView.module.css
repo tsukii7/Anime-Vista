@@ -21,3 +21,17 @@
   margin-top: 30vh;
   height: 50vh;
 }
+
+/* ── Mobile ── */
+@media (max-width: 767px) {
+  .activityContainer {
+    width: 95%;
+    padding: 200px 0 24px;
+    gap: 14px;
+  }
+
+  .loading {
+    margin-top: 200px;
+    font-size: 15px;
+  }
+}

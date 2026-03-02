@@ -84,7 +84,7 @@ const DetailsView = ({ anime }) => {
         // Popularity, Favorites, Studios, Producers, Source
         // Hashtag, Genres, Romaji, English, Native, Synonyms
         return [
-            { label: t('details.airing').replace(':', ''), value: (mounted ? getTimeDifferenceString(anime?.nextAiringEpisode?.airingAt) : null) || naText },
+            { label: t('details.airing'), value: (mounted ? getTimeDifferenceString(anime?.nextAiringEpisode?.airingAt) : null) || naText },
 
             { label: t('details.format'), value: anime?.format || naText },
             { label: t('details.episodes'), value: anime?.episodes || naText },

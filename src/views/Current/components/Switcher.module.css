@@ -1,6 +1,7 @@
 .switcher {
     display: flex;
-    width: 207px;
+    min-width: 207px;
+    width: auto;
     height: 48px;
     border: 1px solid var(--Schemes-Outline, #79747E);
     border-radius: 9999px;
@@ -19,7 +20,8 @@
     line-height: 20px;
     letter-spacing: 0.1px;
     border: none;
-    padding: 10px 12px;
+    padding: 10px 16px;
+    white-space: nowrap;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -54,3 +54,38 @@
 .search-icon:hover {
     padding-bottom: 1px;
 }
+
+/* ── Tablet ── */
+@media (max-width: 1023px) {
+    .search-bar {
+        max-width: 320px;
+        min-width: 180px;
+    }
+}
+
+/* ── Mobile ── */
+@media (max-width: 767px) {
+    .search-bar {
+        max-width: none;
+        min-width: 0;
+        flex: 1;
+        height: 44px;
+        border-radius: 22px;
+        padding: 0 10px;
+    }
+
+    .search-input {
+        font-size: 14px;
+        padding-left: 10px;
+    }
+
+    .search-button {
+        height: 36px;
+        width: 36px;
+    }
+
+    .search-button:hover {
+        height: 36px;
+        width: 36px;
+    }
+}

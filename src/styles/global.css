@@ -85,3 +85,42 @@ body, html {
     height: 250px;
     margin-bottom: 16px;
 }
+
+/* ── Sidebar mobile overlay backdrop ── */
+.sidebar-overlay {
+    display: none;
+}
+
+/* ── Tablet (768-1023px) ── */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .page-content {
+        width: calc(100% - 64px);
+    }
+}
+
+/* ── Mobile (<768px) ── */
+@media (max-width: 767px) {
+    .page-content {
+        width: 100%;
+        border-radius: 0;
+        outline: none;
+        margin: 0;
+    }
+
+    .sidebar-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 99;
+    }
+
+    .loadingImg {
+        width: 160px;
+        height: 160px;
+    }
+
+    .loadingText {
+        font-size: 18px;
+    }
+}

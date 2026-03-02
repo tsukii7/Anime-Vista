@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Person2RoundedIcon from '@mui/icons-material/Person2Rounded';
+import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import { getCurrentUser, isLoggedIn } from "../../firebase/auth.js";
 import { hashUidToNumber } from "../../firebase/db.js";
 import { useNavigate } from "react-router";
@@ -12,7 +13,7 @@ import TranslateIcon from '@mui/icons-material/Translate';
 import './TopBar.css';
 import { useDispatch } from "react-redux";
 
-const TopBar = () => {
+const TopBar = ({ onMenuClick }) => {
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
     const [mounted, setMounted] = useState(false);
@@ -48,14 +49,24 @@ const TopBar = () => {
 
     return (
         <header className="topbar">
-            <button
-                type="button"
-                className="topbar-logo"
-                onClick={() => navigate('/')}
-                aria-label={t('nav.home')}
-            >
-                AnimeVista
-            </button>
+            <div className="topbar-left">
+                <button
+                    type="button"
+                    className="hamburger-button"
+                    onClick={onMenuClick}
+                    aria-label="Toggle menu"
+                >
+                    <MenuRoundedIcon />
+                </button>
+                <button
+                    type="button"
+                    className="topbar-logo"
+                    onClick={() => navigate('/')}
+                    aria-label={t('nav.home')}
+                >
+                    AnimeVista
+                </button>
+            </div>
             <SearchBar />
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <button

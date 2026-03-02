@@ -62,3 +62,28 @@
 .bottomMarker {
     height: 1px;
 }
+
+/* ── Mobile ── */
+@media (max-width: 767px) {
+    .container {
+        padding-bottom: 24px;
+    }
+
+    .inputBox {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .textarea {
+        height: 60px;
+        font-size: 13px;
+    }
+
+    .sendBtn {
+        align-self: flex-end;
+    }
+
+    .commentList {
+        gap: 16px;
+    }
+}

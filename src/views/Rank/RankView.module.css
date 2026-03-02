@@ -1,6 +1,6 @@
 .rankContainer {
     width: 100%;
-    height: 100%;
+    min-height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -14,11 +14,13 @@
     min-height: 0;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    align-items: center;
 }
 
 .rankPagination {
-    margin-top: 4px;
+    margin-top: auto;
+    padding: 12px 0;
+    padding-top: 24px;
 }
 
 
@@ -204,14 +206,114 @@
 
 .rankingGrid {
     display: grid;
-    width: 90%;
-    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    width: 100%;
+    grid-template-columns: repeat(5, 1fr);
     row-gap: 24px;
-    column-gap: 50px;
-    max-width: calc(210px * 5 + 50px * 4);
-    padding: 18px 5% 6px;
+    column-gap: 40px;
+    max-width: calc(210px * 5 + 40px * 4 + 48px);
+    padding: 18px 24px 6px;
     justify-content: center;
     justify-items: center;
     align-content: start;
     margin: 0 auto;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+/* ── Tablet ── */
+@media (max-width: 1023px) {
+    .rankingGrid {
+        column-gap: 24px;
+        grid-template-columns: repeat(3, 1fr);
+        max-width: 100%;
+    }
+}
+
+/* ── Small screen: 3 columns ── */
+@media (max-width: 768px) {
+    .rankingGrid {
+        grid-template-columns: repeat(3, 1fr);
+        column-gap: clamp(8px, 2.5vw, 16px);
+        row-gap: clamp(12px, 3vw, 20px);
+        max-width: 100%;
+        width: 100%;
+        padding: 12px clamp(8px, 3vw, 16px) 10px;
+        box-sizing: border-box;
+    }
+
+    .tabLabel {
+        font-size: 15px;
+    }
+}
+
+/* ── Mobile ── */
+@media (max-width: 767px) {
+    .rankContainer {
+        border-radius: 0;
+    }
+
+    .tabsRow {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .tabItem {
+        min-width: 80px;
+        flex: 1 1 0;
+    }
+
+    .tabLabel {
+        font-size: 14px;
+        padding: 10px 0;
+    }
+
+    .rankingGrid {
+        width: 100%;
+        max-width: 100%;
+        grid-template-columns: repeat(3, 1fr);
+        column-gap: clamp(6px, 2vw, 12px);
+        row-gap: clamp(10px, 2.5vw, 16px);
+        padding: 12px clamp(6px, 2vw, 12px) 10px;
+        box-sizing: border-box;
+    }
+
+    .card {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 210 / 332;
+    }
+
+    .cardHeader {
+        width: 100%;
+    }
+
+    .cardRank {
+        font-size: 22px;
+        line-height: 28px;
+    }
+
+    .cardTitle {
+        font-size: 10px;
+        line-height: 13px;
+    }
+
+    .cardImage {
+        width: 100%;
+        height: 84%;
+        top: 16%;
+    }
+
+    .cardOverlay {
+        width: 100%;
+        height: 18%;
+    }
+
+    .cardScore {
+        font-size: 16px;
+        line-height: 22px;
+        top: auto;
+        bottom: 4px;
+        left: auto;
+        right: 6px;
+    }
 }

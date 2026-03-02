@@ -6,7 +6,28 @@
     padding: 30px;
     background-color: #FEF7FF;
     height: 60px;
-    /*border-bottom: 1px solid #ccc;*/
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.hamburger-button {
+    display: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    color: var(--Schemes-On-Surface-Variant, #49454F);
+    transition: background 0.2s ease;
+}
+
+.hamburger-button:hover {
+    background-color: rgba(101, 85, 143, 0.08);
 }
 
 .topbar-logo {
@@ -61,4 +82,43 @@
 
 .user-icon {
     font-size: 24px;
+}
+
+/* ── Tablet ── */
+@media (max-width: 1023px) {
+    .hamburger-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .topbar {
+        padding: 16px 20px;
+    }
+}
+
+/* ── Mobile ── */
+@media (max-width: 767px) {
+    .topbar {
+        padding: 10px 12px;
+        height: 52px;
+    }
+
+    .topbar-logo {
+        font-size: 20px;
+        height: 52px;
+    }
+
+    .lang-button {
+        padding: 0 6px;
+        font-size: 12px;
+        min-width: 32px;
+        height: 36px;
+    }
+
+    .user-button {
+        min-width: 36px;
+        height: 36px;
+        padding: 0;
+    }
 }

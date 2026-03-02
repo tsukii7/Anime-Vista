@@ -144,20 +144,6 @@ const MeFavouriteView = ({ favorites }) => {
     return (
       <div className={styles.errorMessage}>
         <LoadingIndicator isLoading={false} hasError={true} text={error} />
-        <button
-          onClick={() => { setLoading(true); setError(null); setReloadNonce(prev => prev + 1); }}
-          style={{
-            marginTop: '10px',
-            padding: '8px 16px',
-            borderRadius: '20px',
-            border: '1px solid #A6A1B8',
-            background: 'none',
-            cursor: 'pointer',
-            color: '#A6A1B8'
-          }}
-        >
-          {t('me.retryLoading')}
-        </button>
       </div>
     );
   }
@@ -171,22 +157,6 @@ const MeFavouriteView = ({ favorites }) => {
     return (
       <div className={styles.errorMessage}>
         <LoadingIndicator isLoading={false} hasError={rawCount > 0} text={msg} />
-        {rawCount > 0 && (
-          <button
-            onClick={() => { setLoading(true); setError(null); setReloadNonce(prev => prev + 1); }}
-            style={{
-              marginTop: '10px',
-              padding: '8px 16px',
-              borderRadius: '20px',
-              border: '1px solid #A6A1B8',
-              background: 'none',
-              cursor: 'pointer',
-              color: '#A6A1B8'
-            }}
-          >
-            {t('me.retryLoading')}
-          </button>
-        )}
       </div>
     );
   }

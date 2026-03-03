@@ -165,38 +165,51 @@ export const fetchAnimeDetails = createAsyncThunk(
 
         const anime = response.data.data.Media;
 
-        // Step 2: Perform secondary fetch for recommendation titles to trigger proxy localization
+        // Step 2: Perform secondary fetch for localized titles (main anime + recommendations)
         const recommendationIds = anime?.recommendations?.nodes
             ?.map(node => node.mediaRecommendation?.id)
             .filter(Boolean) || [];
+        const localizedIds = Array.from(new Set([animeId, ...recommendationIds]));
 
-        if (recommendationIds.length > 0 && !signal.aborted) {
+        if (localizedIds.length > 0 && !signal.aborted) {
             try {
                 const localizedResponse = await anilistApi.post('', {
                     query: LOCALIZED_TITLES_QUERY,
-                    variables: { ids: recommendationIds },
+                    variables: { ids: localizedIds },
                 }, { signal });
 
                 const localizedMediaMap = {};
-                localizedResponse.data.data.Page.media.forEach(m => {
-                    localizedMediaMap[m.id] = m;
-                });
+                localizedResponse.data?.data?.Page?.media
+                    ?.forEach(m => {
+                        if (m?.id != null) {
+                            localizedMediaMap[m.id] = m;
+                        }
+                    });
+
+                // Merge localized data into the main anime
+                if (localizedMediaMap[animeId]) {
+                    const localizedMain = localizedMediaMap[animeId];
+                    anime.title = localizedMain.title || anime.title;
+                    anime.synonyms = localizedMain.synonyms || anime.synonyms;
+                }
 
                 // Merge localized titles/synonyms back into the recommendation nodes
-                anime.recommendations.nodes = anime.recommendations.nodes.map(node => {
-                    const media = node.mediaRecommendation;
-                    if (media && localizedMediaMap[media.id]) {
-                        return {
-                            ...node,
-                            mediaRecommendation: {
-                                ...media,
-                                title: localizedMediaMap[media.id].title,
-                                synonyms: localizedMediaMap[media.id].synonyms
-                            }
-                        };
-                    }
-                    return node;
-                });
+                if (anime.recommendations?.nodes) {
+                    anime.recommendations.nodes = anime.recommendations.nodes.map(node => {
+                        const media = node.mediaRecommendation;
+                        if (media && localizedMediaMap[media.id]) {
+                            return {
+                                ...node,
+                                mediaRecommendation: {
+                                    ...media,
+                                    title: localizedMediaMap[media.id].title,
+                                    synonyms: localizedMediaMap[media.id].synonyms
+                                }
+                            };
+                        }
+                        return node;
+                    });
+                }
             } catch (error) {
                 const isCancelled = error?.name === 'AbortError' || error?.message?.toLowerCase().includes('cancel');
                 if (!isCancelled) {

@@ -285,7 +285,8 @@ export const zh = {
     },
     current: {
         updatedToEpisode: "更新至第 {episode} 集",
-        totalEpisodes: "共 {episodes} 集"
+        totalEpisodes: "共 {episodes} 集",
+        noFavoritesInTimeline: "暂无收藏，先去点个收藏再回来吧～"
     },
     home: {
         trendingNow: "当前热门",

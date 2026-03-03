@@ -140,9 +140,6 @@ const listSlice = createSlice({
         state.status = 'succeeded';
         state.seasonAnime = action.payload.seasonAnime;
         state.currentPage = action.payload.currentPage;
-        if (action.payload.lastPage) {
-          state.totalPages = Math.min(action.payload.lastPage, 10);
-        }
       })
       .addCase(fetchAnimeList.rejected, (state, action) => {
         if (action.error.name === 'AbortError' || action.meta.aborted) {

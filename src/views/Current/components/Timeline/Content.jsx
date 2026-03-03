@@ -46,6 +46,7 @@ export default function Content({ animeListByDate, onRefsReady, favoriteIds }) {
                 time={anime?.airingAt}
                 id={anime?.id}
                 anime={anime?.anime}
+                synonyms={anime?.anime?.synonyms ?? anime?.synonyms}
                 isFavorite={favoriteSet.has(Number(anime?.id))}
             />
         );

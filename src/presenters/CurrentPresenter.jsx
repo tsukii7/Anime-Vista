@@ -11,6 +11,8 @@ import {
     setListPage
 } from "../models/current/listSlice.js";
 import { useUserFavorites } from "../firebase/db.js";
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../firebase/config.js';
 
 export default function CurrentPresenter() {
     const dispatch = useDispatch();
@@ -18,7 +20,15 @@ export default function CurrentPresenter() {
     const [timePointPositions, setTimePointPositions] = useState([]);
     const [viewOption, setViewOption] = useState('List');
     const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(() => auth.currentUser != null);
     const favorites = useUserFavorites();
+
+    useEffect(() => {
+        const unsub = onAuthStateChanged(auth, (user) => {
+            setIsLoggedIn(!!user);
+        });
+        return () => unsub();
+    }, []);
 
     const {
         groupedAnime,
@@ -150,6 +160,7 @@ export default function CurrentPresenter() {
             showFavoritesOnly={showFavoritesOnly}
             setShowFavoritesOnly={setShowFavoritesOnly}
             favoriteIds={favorites}
+            isLoggedIn={isLoggedIn}
             currentViewStatus={currentStatus}
             error={currentError}
         />

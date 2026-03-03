@@ -122,8 +122,9 @@ export function groupAnimeByDate(animeList, maxDate) {
                 }
 
                 animeByDate[dateKey].animes.push({
-                    title: anime?.title, // Store title object
+                    title: anime?.title,
                     anime: anime,
+                    synonyms: anime?.synonyms,
                     coverImage: anime?.coverImage?.large,
                     episode: edge?.node?.episode,
                     id: anime?.id,

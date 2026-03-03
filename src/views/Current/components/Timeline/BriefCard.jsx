@@ -4,10 +4,11 @@ import { useLanguage } from '../../../../i18n/LanguageContext.jsx';
 import { getDisplayTitle } from '../../../../utils/animeUtils.js';
 import FavoriteBtn from '../../../../components/FavoriteBtn.jsx';
 
-export default function BriefCard({ image, title, episode, time, id, anime, isFavorite }) {
+export default function BriefCard({ image, title, episode, time, id, anime, synonyms, isFavorite }) {
     const { lang } = useLanguage();
     const navigate = useNavigate();
-    const translatedTitle = getDisplayTitle(anime || { id, title, coverImage: { large: image }, synonyms: [] }, lang);
+    const animeForTitle = anime || { id, title, coverImage: { large: image }, synonyms: synonyms || [] };
+    const translatedTitle = getDisplayTitle(animeForTitle, lang);
     const displayImage = anime?.coverImage?.large || image;
 
     function handleClick() {

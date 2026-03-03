@@ -215,6 +215,29 @@
 .error-message {
     height: 100%;
 }
+
+.current-view-body {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.current-view-content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.center-stage {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+}
+
 .season-title {
     color: var(--Labels-Primary, #000);
     font-feature-settings: 'liga' off, 'clig' off;

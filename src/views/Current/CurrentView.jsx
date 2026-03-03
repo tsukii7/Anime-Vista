@@ -8,16 +8,17 @@ import LoadingIndicator from "../../components/LoadingIndicator";
 import { useLanguage } from '../../i18n/LanguageContext.jsx';
 
 export default function CurrentView({ seasonAnime, animeListByDate, timePointPositions, onRefsReady,
-    currentPage, totalPages, status, onPageChange, viewOption, setViewOption, showFavoritesOnly, setShowFavoritesOnly, favoriteIds, currentViewStatus, error }) {
-    const { lang } = useLanguage();
-
+    currentPage, totalPages, status, onPageChange, viewOption, setViewOption, showFavoritesOnly, setShowFavoritesOnly, favoriteIds, isLoggedIn, currentViewStatus, error }) {
+    const { lang, t } = useLanguage();
+    const showFavoritesOnlyBtn = viewOption === "Timeline" && isLoggedIn;
+    const isEmptyFavoritesFilter = viewOption === "Timeline" && showFavoritesOnly && (!favoriteIds || favoriteIds.length === 0);
 
     return (
         <div className={styles["current-view"]}>
             <div className={styles["current-view-topbar"]}>
                 <SeasonTitle />
                 <div className={styles["current-topbar-actions"]}>
-                    {viewOption === "Timeline" && (
+                    {showFavoritesOnlyBtn && (
                         <button
                             type="button"
                             className={`${styles["favorite-filter-button"]} ${showFavoritesOnly ? styles["favorite-filter-button-active"] : ""}`}
@@ -32,34 +33,51 @@ export default function CurrentView({ seasonAnime, animeListByDate, timePointPos
                         viewOption={viewOption} />
                 </div>
             </div>
-            {currentViewStatus === 'loading' && (<LoadingIndicator />)}
-            {currentViewStatus === 'failed' && (
-                <div className={styles["error-message"]}>
-                    <LoadingIndicator isLoading={false} hasError={true} text={error} />
-                </div>
-            )}
-            {status === 'succeeded' && (
-                <div>
-                    <div>
+            <div className={styles["current-view-body"]}>
+                {currentViewStatus === 'loading' && (
+                    <div className={styles["center-stage"]}>
+                        <LoadingIndicator />
+                    </div>
+                )}
+                {currentViewStatus === 'failed' && (
+                    <div className={styles["center-stage"]}>
+                        <LoadingIndicator isLoading={false} hasError={true} text={error} />
+                    </div>
+                )}
+                {status === 'succeeded' && (
+                    <div className={styles["current-view-content"]}>
                         {viewOption === "Timeline" ? (
-                            <CurrentTimelineView
-                                animeListByDate={animeListByDate}
-                                timePointPositions={timePointPositions}
-                                onRefsReady={onRefsReady}
-                                favoriteIds={favoriteIds}
-                            />
+                            isEmptyFavoritesFilter ? (
+                                <div className={styles["center-stage"]}>
+                                    <LoadingIndicator
+                                        isLoading={false}
+                                        hasError={true}
+                                        text={t('current.noFavoritesInTimeline') || (lang === 'zh' ? '暂无收藏，先去点个收藏再回来吧～' : 'No favorites yet. Add some and come back!')}
+                                    />
+                                </div>
+                            ) : (
+                                <CurrentTimelineView
+                                    animeListByDate={animeListByDate}
+                                    timePointPositions={timePointPositions}
+                                    onRefsReady={onRefsReady}
+                                    favoriteIds={favoriteIds}
+                                />
+                            )
                         ) : (
                             <CurrentListView
                                 seasonAnime={seasonAnime}
                             />
                         )}
+
+                        {!isEmptyFavoritesFilter && (
+                            <Pagination
+                                totalPages={totalPages}
+                                currentPage={currentPage}
+                                onPageChange={onPageChange} />
+                        )}
                     </div>
-                    <Pagination
-                        totalPages={totalPages}
-                        currentPage={currentPage}
-                        onPageChange={onPageChange} />
-                </div>
-            )}
+                )}
+            </div>
         </div>
     )
 

@@ -285,7 +285,8 @@ export const en = {
     },
     current: {
         updatedToEpisode: "Updated to episode {episode}",
-        totalEpisodes: "{episodes} episodes in total"
+        totalEpisodes: "{episodes} episodes in total",
+        noFavoritesInTimeline: "No favorites yet. Add some and come back!"
     },
     home: {
         trendingNow: "Trending Now",

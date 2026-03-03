@@ -6,14 +6,58 @@ import FavoriteBtn from "../../../components/FavoriteBtn.jsx";
 import { useUserFavorites } from "../../../firebase/db.js";
 import { useLanguage } from '../../../i18n/LanguageContext.jsx';
 import { translateToChinese } from '../../../utils/translateText.js';
-import { getDisplayTitle } from '../../../utils/animeUtils.js';
+import { getChineseTitle, getDisplayTitle } from '../../../utils/animeUtils.js';
 
 const PopularityListItem = ({ anime }) => {
     const navigate = useNavigate();
     const { lang, t } = useLanguage();
     const favorites = useUserFavorites();
 
-    const displayTitle = getDisplayTitle(anime, lang);
+    const [displayTitle, setDisplayTitle] = useState(() => getDisplayTitle(anime, lang));
+
+    useEffect(() => {
+        let cancelled = false;
+        const base = getDisplayTitle(anime, lang);
+
+        if (lang !== 'zh') {
+            setDisplayTitle(base);
+            return () => {
+                cancelled = true;
+            };
+        }
+
+        const zhTitle = getChineseTitle(anime);
+        if (zhTitle) {
+            setDisplayTitle(getDisplayTitle(anime, lang));
+            return () => {
+                cancelled = true;
+            };
+        }
+
+        // If we don't have a Chinese title from AniList/proxy, translate as a last resort.
+        // Prefer English when available; otherwise fall back to native/romaji.
+        const sourceTitle =
+            anime?.title?.english ||
+            anime?.title?.native ||
+            anime?.title?.romaji ||
+            base;
+
+        setDisplayTitle(base);
+        translateToChinese(String(sourceTitle || '')).then((translated) => {
+            if (!cancelled) setDisplayTitle(translated || base);
+        });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [
+        lang,
+        anime?.id,
+        anime?.title?.native,
+        anime?.title?.romaji,
+        anime?.title?.english,
+        Array.isArray(anime?.synonyms) ? anime.synonyms.join('|') : ''
+    ]);
     const ratingValue = Math.round((anime?.averageScore || 0) / 20);
     const stars = Array.from({ length: ratingValue }, (_, i) => (
         <div key={i} className={styles.star} />

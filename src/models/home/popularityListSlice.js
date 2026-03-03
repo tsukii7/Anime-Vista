@@ -4,10 +4,10 @@ import anilistApi from '../../utils/anilistApi';
 
 export const fetchPopularityList = createAsyncThunk(
     'popularity/fetchList',
-    async ({ page = 1 } = {}, { signal }) => {
+    async (_, { signal }) => {
         const query = `
-        query ($page: Int, $perPage: Int) {
-            Page(page: $page, perPage: $perPage) {
+        query ($perPage: Int) {
+            Page(page: 1, perPage: $perPage) {
                 media(type: ANIME, sort: TRENDING_DESC, genre_not_in: ["hentai"]) {
                     id
                     title { english native romaji }
@@ -25,9 +25,10 @@ export const fetchPopularityList = createAsyncThunk(
             }
         }`;
 
+        const perPage = 50;
         const response = await anilistApi.post('', {
             query,
-            variables: { page, perPage: 10 }
+            variables: { perPage }
         }, { signal });
 
         const pageData = response?.data?.data?.Page;
@@ -35,10 +36,21 @@ export const fetchPopularityList = createAsyncThunk(
             throw new Error('AniList returned invalid payload');
         }
 
+        // Clone and lightly shuffle the list to avoid looking identical
+        // to the global "Trending" ranking while still keeping the same pool.
+        const media = [...(pageData.media || [])];
+        for (let i = media.length - 1; i > 0; i -= 1) {
+            const j = Math.floor(Math.random() * (i + 1));
+            const tmp = media[i];
+            media[i] = media[j];
+            media[j] = tmp;
+        }
+
+        const totalPages = Math.max(1, Math.ceil(media.length / 10));
+
         return {
-            media: pageData.media,
-            page,
-            totalPages: pageData.pageInfo.lastPage
+            media,
+            totalPages
         };
     }
 );
@@ -65,7 +77,6 @@ const popularityListSlice = createSlice({
             .addCase(fetchPopularityList.fulfilled, (state, action) => {
                 state.status = 'succeeded';
                 state.list = action.payload.media;
-                state.currentPage = action.payload.page;
                 state.totalPages = action.payload.totalPages;
             })
             .addCase(fetchPopularityList.rejected, (state, action) => {

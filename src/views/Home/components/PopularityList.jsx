@@ -13,11 +13,13 @@ const PopularityList = () => {
     const { t } = useLanguage();
 
     React.useEffect(() => {
-        const request = dispatch(fetchPopularityList({ page: currentPage }));
+        const request = dispatch(fetchPopularityList());
         return () => {
-            request.abort();
+            if (request && typeof request.abort === 'function') {
+                request.abort();
+            }
         };
-    }, [currentPage, dispatch]);
+    }, [dispatch]);
 
     const handlePageChange = (page) => {
         dispatch(setPopularityPage(page));
@@ -26,10 +28,14 @@ const PopularityList = () => {
     if (status === 'loading') return <LoadingIndicator />;
     if (status === 'failed') return <LoadingIndicator isLoading={false} hasError={true} text={error || t('common.error') || "Oops! Something went wrong..."} />;
 
+    const pageSize = 10;
+    const start = (currentPage - 1) * pageSize;
+    const visibleList = list.slice(start, start + pageSize);
+
     return (
         <div>
             <div className={styles.popularityList}>
-                {list.map((anime) => (
+                {visibleList.map((anime) => (
                     anime && <PopularityListItem
                         key={anime?.id}
                         anime={anime}

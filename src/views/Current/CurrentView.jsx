@@ -68,16 +68,16 @@ export default function CurrentView({ seasonAnime, animeListByDate, timePointPos
                                 seasonAnime={seasonAnime}
                             />
                         )}
-
-                        {!isEmptyFavoritesFilter && (
-                            <Pagination
-                                totalPages={totalPages}
-                                currentPage={currentPage}
-                                onPageChange={onPageChange} />
-                        )}
                     </div>
                 )}
             </div>
+            {status === 'succeeded' && (
+                <Pagination
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    onPageChange={onPageChange}
+                />
+            )}
         </div>
     )
 

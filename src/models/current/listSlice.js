@@ -43,6 +43,22 @@ const FETCH_QUERY = `
   }
 `;
 
+const LOCALIZED_TITLES_QUERY = `
+  query ($ids: [Int]) {
+    Page(page: 1, perPage: 50) {
+      media(id_in: $ids, type: ANIME) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        synonyms
+      }
+    }
+  }
+`;
+
 const COUNT_QUERY = `
   query ($page: Int, $perPage: Int, $season: MediaSeason, $year: Int) {
     Page(page: $page, perPage: $perPage) {
@@ -73,7 +89,55 @@ export const fetchAnimeList = createAsyncThunk(
     }, { signal });
 
     const pageInfo = response.data.data.Page.pageInfo;
-    const animeList = response.data.data.Page.media;
+    let animeList = response.data.data.Page.media || [];
+
+    // Secondary fetch: localized titles/synonyms for this page.
+    // Only merge when the localized data actually introduces Chinese text,
+    // otherwise keep the original (which may already contain proxy-injected Chinese).
+    const ids = animeList.map((a) => a?.id).filter(Boolean);
+    if (ids.length > 0 && !signal.aborted) {
+      try {
+        const localizedResponse = await anilistApi.post('', {
+          query: LOCALIZED_TITLES_QUERY,
+          variables: { ids },
+        }, { signal });
+
+        const localizedMediaMap = {};
+        localizedResponse.data?.data?.Page?.media?.forEach((m) => {
+          if (m?.id != null) {
+            localizedMediaMap[m.id] = m;
+          }
+        });
+
+        const hasChinese = (str) => /[\u4e00-\u9fa5]/.test(str || '');
+
+        animeList = animeList.map((anime) => {
+          const localized = localizedMediaMap[anime.id];
+          if (!localized) return anime;
+
+          const localizedHasChinese =
+            hasChinese(localized.title?.chinese) ||
+            hasChinese(localized.title?.native) ||
+            hasChinese(localized.title?.romaji) ||
+            hasChinese(localized.title?.english) ||
+            (Array.isArray(localized.synonyms) && localized.synonyms.some(hasChinese));
+
+          // Only override when localized data actually adds Chinese content.
+          if (!localizedHasChinese) {
+            return anime;
+          }
+
+          return {
+            ...anime,
+            title: localized.title || anime.title,
+            synonyms: localized.synonyms || anime.synonyms,
+          };
+        });
+      } catch (error) {
+        // Fallback silently if localization query fails
+        console.error('[listSlice] Failed to fetch localized titles for current list page:', error);
+      }
+    }
 
     return {
       seasonAnime: animeList,

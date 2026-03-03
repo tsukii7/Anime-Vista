@@ -18,8 +18,11 @@
 }
 
 .errorMessage {
-  margin-top: 30vh;
-  height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 240px;
+  min-height: 50vh;
 }
 
 /* ── Mobile ── */
@@ -33,5 +36,9 @@
   .loading {
     margin-top: 200px;
     font-size: 15px;
+  }
+
+  .errorMessage {
+    padding-top: 200px;
   }
 }

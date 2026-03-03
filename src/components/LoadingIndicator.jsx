@@ -6,7 +6,9 @@ import { useLanguage } from '../i18n/LanguageContext.jsx';
 
 const LoadingIndicator = ({ isLoading = true, hasError = false, text = '' }) => {
     const { t } = useLanguage();
-    if (!isLoading && !hasError) return null;
+    // 当既不在加载也没有错误，并且没有文案时，不渲染。
+    // 如果传入了 text，则用于空状态提示，同样显示指示器。
+    if (!isLoading && !hasError && !text) return null;
 
     return (
         <div className="loadingContainer">

@@ -78,7 +78,7 @@ const MeActivityView = ({ userId }) => {
     if (!loading && allActivities.length === 0) {
         return (
             <div className={styles.errorMessage}>
-                <LoadingIndicator isLoading={false} hasError={false} text={t('me.noActivities')} />
+                <LoadingIndicator isLoading={false} hasError={true} text={t('me.noActivities')} />
             </div>
         );
     }

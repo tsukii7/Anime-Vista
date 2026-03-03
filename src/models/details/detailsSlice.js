@@ -186,28 +186,50 @@ export const fetchAnimeDetails = createAsyncThunk(
                         }
                     });
 
-                // Merge localized data into the main anime
+                const hasChinese = (str) => /[\u4e00-\u9fa5]/.test(str || '');
+
+                // Merge localized data into the main anime only if it introduces Chinese text
                 if (localizedMediaMap[animeId]) {
                     const localizedMain = localizedMediaMap[animeId];
-                    anime.title = localizedMain.title || anime.title;
-                    anime.synonyms = localizedMain.synonyms || anime.synonyms;
+                    const localizedHasChinese =
+                        hasChinese(localizedMain.title?.chinese) ||
+                        hasChinese(localizedMain.title?.native) ||
+                        hasChinese(localizedMain.title?.romaji) ||
+                        hasChinese(localizedMain.title?.english) ||
+                        (Array.isArray(localizedMain.synonyms) && localizedMain.synonyms.some(hasChinese));
+
+                    if (localizedHasChinese) {
+                        anime.title = localizedMain.title || anime.title;
+                        anime.synonyms = localizedMain.synonyms || anime.synonyms;
+                    }
                 }
 
                 // Merge localized titles/synonyms back into the recommendation nodes
                 if (anime.recommendations?.nodes) {
                     anime.recommendations.nodes = anime.recommendations.nodes.map(node => {
                         const media = node.mediaRecommendation;
-                        if (media && localizedMediaMap[media.id]) {
-                            return {
-                                ...node,
-                                mediaRecommendation: {
-                                    ...media,
-                                    title: localizedMediaMap[media.id].title,
-                                    synonyms: localizedMediaMap[media.id].synonyms
-                                }
-                            };
+                        const localized = media && localizedMediaMap[media.id];
+                        if (!localized) return node;
+
+                        const localizedHasChinese =
+                            hasChinese(localized.title?.chinese) ||
+                            hasChinese(localized.title?.native) ||
+                            hasChinese(localized.title?.romaji) ||
+                            hasChinese(localized.title?.english) ||
+                            (Array.isArray(localized.synonyms) && localized.synonyms.some(hasChinese));
+
+                        if (!localizedHasChinese) {
+                            return node;
                         }
-                        return node;
+
+                        return {
+                            ...node,
+                            mediaRecommendation: {
+                                ...media,
+                                title: localized.title || media.title,
+                                synonyms: localized.synonyms || media.synonyms
+                            }
+                        };
                     });
                 }
             } catch (error) {

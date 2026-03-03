@@ -7,15 +7,19 @@ export default function Content({ animeListByDate, onRefsReady, favoriteIds }) {
     const favoriteSet = new Set((favoriteIds || []).map((id) => Number(id)));
 
     useEffect(() => {
+        // 每次列表变化（包括切换“仅看已收藏”）时，重新测量所有可见日期块的位置。
         const observer = new ResizeObserver(() => {
-            if (refs.current.length === animeListByDate.length) {
-                const positions = refs.current.map(el =>
-                    el?.offsetTop - el?.offsetParent?.offsetTop || 0
-                );
-                onRefsReady(positions);
-            }
+            const elements = refs.current.slice(0, animeListByDate.length).filter(Boolean);
+            if (!elements.length) return;
+
+            const positions = elements.map(el =>
+                el?.offsetTop - (el?.offsetParent?.offsetTop || 0)
+            );
+            onRefsReady(positions);
         });
 
+        // 只保留当前页需要的 ref，避免长度比 animeListByDate 还长导致不触发更新
+        refs.current = refs.current.slice(0, animeListByDate.length);
         refs.current.forEach(el => el && observer.observe(el));
 
         return () => {

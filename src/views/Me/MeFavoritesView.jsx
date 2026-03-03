@@ -156,7 +156,7 @@ const MeFavouriteView = ({ favorites }) => {
 
     return (
       <div className={styles.errorMessage}>
-        <LoadingIndicator isLoading={false} hasError={rawCount > 0} text={msg} />
+        <LoadingIndicator isLoading={false} hasError={true} text={msg} />
       </div>
     );
   }

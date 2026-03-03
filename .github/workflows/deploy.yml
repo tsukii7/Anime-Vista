@@ -37,6 +37,7 @@ jobs:
           cp package.json deploy-pkg/
           cp package-lock.json deploy-pkg/
           cp server.js deploy-pkg/
+          cp -r server deploy-pkg/
 
       - name: Upload to VPS
         uses: easingthemes/ssh-deploy@main
@@ -61,6 +62,7 @@ jobs:
             source ~/.bashrc || true
             cd /www/wwwroot/anime-vista
             HUSKY=0 npm ci --omit=dev --ignore-scripts
+            npm rebuild better-sqlite3
             pm2 restart anime-vista || pm2 start server.js --name anime-vista
             sleep 2
             pm2 status

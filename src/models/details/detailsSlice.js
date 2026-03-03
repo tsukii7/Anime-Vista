@@ -138,8 +138,12 @@ const inFlightDetailsRequests = new Map();
 
 export const fetchAnimeDetails = createAsyncThunk(
     'details/fetchAnimeDetails',
-    async (id, { signal }) => {
+    async (id, { signal, getState }) => {
         const animeId = Number(id);
+        const existing = getState?.()?.details?.anime;
+        if (existing?.id === animeId) {
+            return existing;
+        }
         if (inFlightDetailsRequests.has(animeId)) {
             try {
                 return await inFlightDetailsRequests.get(animeId);

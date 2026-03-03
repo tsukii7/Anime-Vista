@@ -147,6 +147,11 @@ dist-ssr
 build/
 .react-router/
 
+# AniList API cache (server)
+cache.sqlite
+cache.sqlite-wal
+cache.sqlite-shm
+
 # Firebase cache
 .firebase/hosting.*
 
